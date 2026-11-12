@@ -45,7 +45,12 @@ jobs:
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
           "
           echo "//${REGISTRY#https://}:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
-          npm publish --registry "$REGISTRY" --access public
+          version="$(node -p "require('./package.json').version")"
+          if npm view "${SCOPED_NAME}@${version}" --registry "$REGISTRY" >/dev/null 2>&1; then
+            echo "npm ${SCOPED_NAME}@${version} is already published - skipping"
+          else
+            npm publish --registry "$REGISTRY" --access public
+          fi
 
       - name: Publish the Maven artifact
         env:
@@ -53,7 +58,7 @@ jobs:
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
           cat > settings.xml <<EOF
           <settings>
             <servers>
@@ -66,7 +71,15 @@ jobs:
           </settings>
           EOF
           mvn --batch-mode --settings settings.xml deploy \
-            -DaltDeploymentRepository="github::default::https://maven.pkg.github.com/${OWNER}/${REPO}"
+            -DaltDeploymentRepository="github::default::https://maven.pkg.github.com/${OWNER}/${REPO}" \
+            > deploy.log 2>&1 || {
+              if grep -qi "already exists" deploy.log; then
+                echo "already published to GitHub Packages - skipping"
+              else
+                tail -40 deploy.log
+                exit 1
+              fi
+            }
 
       - name: Make the packages public
         env:
@@ -123,7 +136,12 @@ jobs:
         run: |
           set -euo pipefail
           cd packages/npm/glass-ticker
-          npm publish --registry https://registry.npmjs.org --access public
+          version="$(node -p "require('./package.json').version")"
+          if npm view "glass-ticker@${version}" --registry https://registry.npmjs.org >/dev/null 2>&1; then
+            echo "glass-ticker@${version} is already on npmjs - skipping"
+          else
+            npm publish --registry https://registry.npmjs.org --access public
+          fi
 
       - name: Publish to PyPI
         if: env.PYPI_PASSWORD != ''
@@ -135,7 +153,7 @@ jobs:
           python -m pip install --upgrade build twine
           python -m build --outdir dist-python packages/python
           twine check dist-python/*
-          twine upload --non-interactive dist-python/*
+          twine upload --non-interactive --skip-existing dist-python/*
 
       - name: Publish to Maven Central
         if: env.CENTRAL_TOKEN != ''
