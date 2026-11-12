@@ -1,9 +1,14 @@
 node_modules/
 dist/
 out/
+target/
 *.log
 npm-debug.log*
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
+*.tgz
+*.whl
+__pycache__/
+*.py[cod]

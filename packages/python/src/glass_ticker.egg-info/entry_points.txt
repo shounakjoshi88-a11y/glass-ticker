@@ -1,0 +1,3 @@
+[console_scripts]
+glass-ticker = glass_ticker.cli:main
+glassticker = glass_ticker.cli:main

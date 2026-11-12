@@ -6,6 +6,54 @@ while you work.
 
 ![Glass Ticker](icon.png)
 
+## Install
+
+The app is a single portable executable - no installer, no runtime to set up.
+
+**winget** (once the manifest is merged upstream)
+
+```powershell
+winget install ShounakJoshi.GlassTicker
+```
+
+**Scoop**
+
+```powershell
+scoop bucket add glass-ticker https://github.com/shounakjoshi88-a11y/scoop-bucket
+scoop install glass-ticker
+```
+
+**npm** - the wrapper downloads the executable and gives you `glassticker`
+
+```bash
+npm install -g glass-ticker
+glassticker
+```
+
+**pip / PyPI** - same idea, gives you `glass-ticker`
+
+```bash
+pip install glass-ticker
+glass-ticker
+```
+
+**Maven** - a launcher jar for JVM projects
+
+```bash
+mvn dependency:get -Dartifact=io.github.shounakjoshi88:glass-ticker-launcher:2.0.0
+java -jar ~/.m2/repository/io/github/shounakjoshi88/glass-ticker-launcher/2.0.0/glass-ticker-launcher-2.0.0.jar
+```
+
+**Direct download**
+
+Grab `GlassTicker.exe` from the
+[releases page](https://github.com/shounakjoshi88-a11y/glass-ticker/releases).
+Each release also publishes `release.json` with the binary's SHA-256 and
+`GlassTicker.exe.sha256` for command line checks.
+
+All the language wrappers fetch `release.json` first and verify the download
+against that hash - a mismatched file is deleted instead of executed.
+
 ## What it does
 
 - **Watchlist** with live sparklines across NSE/BSE indices, Indian and US
@@ -30,6 +78,19 @@ hosts before fetching.
 
 Prices are near-real-time but Yahoo can delay some feeds by up to 15 minutes,
 so treat the number as an indication rather than a tick.
+
+## Repository layout
+
+```
+index.html, main.js, preload.js     the app
+icon.png, build/icon.ico            icons
+packaging/winget/                   winget-pkgs manifest (submitted upstream)
+packaging/scoop/                    scoop bucket (published as its own repo)
+packages/npm/glass-ticker/          npm wrapper package
+packages/python/                    PyPI wrapper package
+packages/java/                      Maven launcher module
+tools/check-exe-icon.ps1            verifies the icon is embedded in a built exe
+```
 
 ## Build from source
 

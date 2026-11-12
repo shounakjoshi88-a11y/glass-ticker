@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.github.shounakjoshi88</groupId>
+  <artifactId>glass-ticker-launcher</artifactId>
+  <version>2.0.0</version>
+  <packaging>jar</packaging>
+
+  <name>Glass Ticker Launcher</name>
+  <description>Downloads and launches the Glass Ticker desktop market ticker for Windows</description>
+  <url>https://github.com/shounakjoshi88-a11y/glass-ticker</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>shounakjoshi88</id>
+      <name>Shounak Joshi</name>
+      <url>https://github.com/shounakjoshi88-a11y</url>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/shounakjoshi88-a11y/glass-ticker.git</connection>
+    <developerConnection>scm:git:https://github.com/shounakjoshi88-a11y/glass-ticker.git</developerConnection>
+    <url>https://github.com/shounakjoshi88-a11y/glass-ticker</url>
+  </scm>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>17</maven.compiler.release>
+    <central.portal.publisher>shounakjoshi88</central.portal.publisher>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>io.github.shounakjoshi88.glassticker.Launcher</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals><goal>jar-no-fork</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <!--
+      Publishing to Maven Central needs a Sonatype Central Portal account.
+      Set the token in ~/.m2/settings.xml:
+
+        <settings>
+          <servers>
+            <server>
+              <id>central</id>
+              <username>__token__</username>
+              <password>YOUR_CENTRAL_TOKEN</password>
+            </server>
+          </servers>
+        </settings>
+
+      then run: mvn -Prelease deploy
+    -->
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.8.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>true</autoPublish>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>
