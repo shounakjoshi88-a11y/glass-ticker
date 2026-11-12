@@ -1,25 +1,25 @@
 {
-    "version": "2.0.1",
-    "description": "Glass Ticker - a frameless acrylic desktop market ticker for Windows",
-    "homepage": "https://github.com/shounakjoshi88-a11y/glass-ticker",
-    "license": "MIT",
-    "url": "https://github.com/shounakjoshi88-a11y/glass-ticker/releases/download/v2.0.1/GlassTicker.exe",
-    "hash": "6a6652d4a8c6d8e4d255be7b01599bbbabe3dd89fa21b000dd656a12a3ebbe0d",
-    "bin": "GlassTicker.exe",
-    "shortcuts": [
-        [
-            "GlassTicker.exe",
-            "Glass Ticker"
-        ]
-    ],
-    "checkver": {
-        "url": "https://api.github.com/repos/shounakjoshi88-a11y/glass-ticker/releases/latest",
-        "regex": "\"tag_name\"\\s*:\\s*\"v?([0-9.]+)\""
-    },
-    "autoupdate": {
-        "url": "https://github.com/shounakjoshi88-a11y/glass-ticker/releases/download/v$version/GlassTicker.exe",
-        "hash": {
-            "url": "https://github.com/shounakjoshi88-a11y/glass-ticker/releases/download/v$version/GlassTicker.exe.sha256"
-        }
+  "version": "2.3.0",
+  "description": "Glass Ticker - a frameless acrylic desktop market ticker for Windows",
+  "homepage": "https://github.com/shounakjoshi88-a11y/glass-ticker",
+  "license": "MIT",
+  "url": "https://github.com/shounakjoshi88-a11y/glass-ticker/releases/download/v2.3.0/GlassTicker.exe",
+  "hash": "d81d1a84889211d2532b44994f12281f30c67fe3d98781b49f3763b7db25351a",
+  "bin": "GlassTicker.exe",
+  "shortcuts": [
+    [
+      "GlassTicker.exe",
+      "Glass Ticker"
+    ]
+  ],
+  "checkver": {
+    "url": "https://api.github.com/repos/shounakjoshi88-a11y/glass-ticker/releases/latest",
+    "regex": "\"tag_name\"\\s*:\\s*\"v?([0-9.]+)\""
+  },
+  "autoupdate": {
+    "url": "https://github.com/shounakjoshi88-a11y/glass-ticker/releases/download/v$version/GlassTicker.exe",
+    "hash": {
+      "url": "https://github.com/shounakjoshi88-a11y/glass-ticker/releases/download/v$version/GlassTicker.exe.sha256"
     }
+  }
 }
