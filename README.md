@@ -71,6 +71,11 @@ against that hash - a mismatched file is deleted instead of executed.
 
 ## What it does
 
+- **Aurora glass theme** - layered translucent surfaces with a soft colour
+  wash behind the charts
+- **Pinnable desktop widget** - drag the chart out of the window and it pins
+  as a small always-on-top widget anywhere on the desktop, still receiving
+  live data
 - **Company logos, discovered automatically** - provider logo, then the issuer
   website favicon, then a monogram fallback. Cached locally for a week so the
   list does not re-fetch on every refresh
