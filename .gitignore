@@ -2,6 +2,8 @@ node_modules/
 dist/
 out/
 target/
+build/
+*.egg-info/
 *.log
 npm-debug.log*
 .DS_Store
