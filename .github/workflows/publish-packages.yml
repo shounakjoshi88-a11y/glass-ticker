@@ -72,24 +72,21 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
-          NPM_NAME: "${{ github.repository_owner }}/glass-ticker"
-          MAVEN_NAME: "com.github.${{ github.repository_owner }}:glass-ticker-launcher"
         run: |
           set -uo pipefail
           # GitHub Packages defaults to private - flip both to public so
-          # anyone can install them without a token.
-          gh api --method PATCH "/users/${OWNER}/packages/npm/${NPM_NAME}" \
-            -f visibility=public 2>&1 | tail -2 || echo "npm visibility unchanged"
-          gh api --method PATCH "/users/${OWNER}/packages/maven/${MAVEN_NAME}" \
-            -f visibility=public 2>&1 | tail -2 || echo "maven visibility unchanged"
-
-      - name: Summarise
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OWNER: ${{ github.repository_owner }}
-        run: |
-          gh api "/users/${OWNER}/packages?package_type=maven,npm" \
-            --jq '.[] | "\(.package_type)\t\(.name)\t\(.visibility)"' || true
+          # anyone can install them without a token. The API hands back the
+          # exact resource URL, so there is no name format to guess.
+          for type in npm maven; do
+            gh api --paginate "/users/${OWNER}/packages?package_type=${type}" \
+              --jq '.[] | "(.package_type)\t(.name)\t(.visibility)\t(.url)"' || true
+            gh api --paginate "/users/${OWNER}/packages?package_type=${type}" \
+              --jq '.[].url' | while read -r url; do
+                echo "patching ${url}"
+                gh api --method PATCH "${url}" -f visibility=public \
+                  --jq '"now: " + .visibility' || echo "could not change ${url}"
+              done
+          done
 
   public-registries:
     name: Publish to npmjs, PyPI and Maven Central
