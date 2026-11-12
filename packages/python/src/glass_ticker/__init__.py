@@ -10,7 +10,7 @@ from .installer import (
     install_dir,
 )
 
-__version__ = "2.0.0"
+__version__ = "2.3.0"
 
 __all__ = [
     "__version__",

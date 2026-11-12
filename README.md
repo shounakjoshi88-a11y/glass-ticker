@@ -56,17 +56,21 @@ against that hash - a mismatched file is deleted instead of executed.
 
 ## What it does
 
-- **Watchlist** with live sparklines across NSE/BSE indices, Indian and US
+- **Company logos, discovered automatically** - provider logo, then the issuer
+  website favicon, then a monogram fallback. Cached locally for a week so the
+  list does not re-fetch on every refresh
+- **Watchlist tabs** with live sparklines across NSE/BSE indices, Indian and US
   equities, and crypto (`^NSEI`, `RELIANCE.NS`, `AAPL`, `BTC-USD`, ...)
 - **Interactive chart** for the selected symbol with range switching, area or
   candle style, and an optional SMA overlay
-- **Price alerts** with native Windows notifications
+- **Alerts on price targets or percentage moves**, with native Windows
+  notifications
 - **Portfolio positions** - quantity and average cost per symbol, with live
-  day change and P&L grouped by currency
+  day change and P&L, plus a **currency converter** for the totals
+- **Mini ticker-strip mode** for a single line of scrolling quotes
+- **Light and dark themes**, drag-to-reorder rows, and per-row sorting
 - **Window control** - always on top, opacity slider, start at login, system
-  tray, and the `Ctrl+Shift+G` global hotkey
-- **Personalisation** - accent colour, sorting, solo mode, and JSON backup
-  export/import
+  tray, maximize, and the `Ctrl+Shift+G` global hotkey
 - Everything is stored locally (`localStorage` plus a small window-bounds file)
 
 ## Data source
@@ -120,14 +124,14 @@ git push origin v2.0.0
 The executable is **not code-signed**, so Windows SmartScreen shows a
 warning the first time you run it. Choose *More info* -> *Run anyway*.
 
-## Known limits in this round
+## Known limits
 
-- A single watchlist - no multiple watchlist tabs yet
-- Dark theme only, no light theme
-- No drag-to-reorder of watchlist rows
-- No mini ticker-strip mode
-- Alerts are absolute price targets, not percentage moves
-- Portfolio totals are shown per currency, with no currency conversion
+- Windows only - there is no macOS or Linux build
+- The executable is not code-signed, so SmartScreen warns on first run
+- Quotes come from Yahoo's public feed and can be delayed up to 15 minutes on
+  some exchanges
+- Company logos come from a third-party favicon service, so a symbol with no
+  known issuer falls back to a monogram
 
 ## License
 

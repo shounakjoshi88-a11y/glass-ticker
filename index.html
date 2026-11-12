@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><title>Glass Ticker</title><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:">
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Glass Ticker</title><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data: https:">
 <style>
 *{box-sizing:border-box;margin:0}
 :root{--a:#8ab4ff;--g:#34d399;--r:#f87171;--sw:320px;--m:rgba(255,255,255,.55)}
@@ -55,22 +55,90 @@ body{font-variant-numeric:tabular-nums}
 .ni{padding:9px 10px;border-radius:10px;cursor:pointer;transition:.2s}.ni:hover{background:rgba(255,255,255,.09)}.ni small{color:var(--m)}
 #ps{margin-top:6px}#ps input{width:84px}#pt{margin-left:6px}
 #ft{flex-wrap:wrap;gap:8px 14px}#ac{width:22px;height:20px;border:0;padding:0;background:none;cursor:pointer}
+
+/* Glass Ticker v2.1 polish */
+:root{--panel:rgba(255,255,255,.06);--line:rgba(255,255,255,.12);--ink:rgba(255,255,255,.93);--muted:rgba(255,255,255,.55);--surface:rgba(18,23,39,.72)}
+body{transition:background .35s,color .35s}
+.glass{transition:background .3s,border-color .3s,box-shadow .3s}
+button,.row,.ni,.tab,.toggle{ -webkit-tap-highlight-color:transparent}
+button:active{transform:scale(.96)}
+.ib{display:grid;place-items:center;font-size:15px}
+.ib svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#pin{color:var(--muted)}#pin.on{color:var(--a);background:color-mix(in srgb,var(--a) 18%,transparent)}
+#max:hover{background:rgba(255,255,255,.14)}
+#tabsbar{display:flex;align-items:center;gap:6px;padding:2px 12px 8px;min-height:37px}
+#tabs{display:flex;align-items:center;gap:5px;overflow:auto;scrollbar-width:none;flex:1}
+.tab{border:1px solid transparent;background:transparent;color:var(--muted);padding:6px 12px;border-radius:9px;white-space:nowrap;cursor:pointer;transition:all .22s}
+.tab:hover{background:rgba(255,255,255,.08);color:var(--ink)}
+.tab.active{background:color-mix(in srgb,var(--a) 22%,transparent);border-color:color-mix(in srgb,var(--a) 35%,transparent);color:var(--ink)}
+#addtab,#stripbtn{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:9px;padding:5px 9px;cursor:pointer;color:var(--muted);transition:.2s}
+#addtab:hover,#stripbtn:hover{color:var(--ink);background:rgba(255,255,255,.13)}
+.company-logo{width:34px;height:34px;flex:0 0 34px;border-radius:10px;object-fit:contain;padding:5px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.10);box-shadow:0 2px 8px rgba(0,0,0,.12);transition:transform .25s,background .25s,border-color .25s}
+.row:hover .company-logo{transform:scale(1.06);background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.2)}
+.logo-fallback{display:grid;place-items:center;color:var(--ink);font-weight:700;font-size:11px;letter-spacing:.2px;background:linear-gradient(145deg,color-mix(in srgb,var(--a) 38%,#29334c),rgba(255,255,255,.08))}
+#companymark{width:34px;height:34px;flex:0 0 34px;border-radius:10px;object-fit:contain;padding:5px;background:rgba(255,255,255,.1);border:1px solid var(--line);margin-right:9px;vertical-align:middle}
+#nm{display:flex;align-items:center;font-size:15px;font-weight:600;min-height:36px}
+body.light .company-logo,body.light #companymark{background:rgba(255,255,255,.86);border-color:rgba(30,45,70,.12)}
+.row .identity{display:flex;align-items:center;gap:9px;min-width:0}
+.row .identity>div{min-width:0}
+.tickitem .company-logo{width:23px;height:23px;flex-basis:23px;padding:3px;border-radius:7px}
+.row{touch-action:pan-y}.row.dragging{opacity:.38;transform:scale(.98)}.row.drop-target{border-color:var(--a);background:color-mix(in srgb,var(--a) 16%,transparent)}
+.row .grip{opacity:0;color:var(--muted);font-size:13px;cursor:grab;position:absolute;left:2px;top:50%;transform:translateY(-50%)}
+.row:hover .grip{opacity:.7}.row[draggable=true]{padding-left:17px}
+#converter{display:flex;align-items:center;gap:7px;margin-left:auto;color:var(--muted);font-size:11px}
+#converter input,#converter select{width:75px;padding:5px 7px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.08);outline:0;color:var(--ink)}
+#converter select option{color:#111}#convertresult{color:var(--ink);font-weight:600;min-width:74px}
+#alertmode{width:auto!important}
+body.light{--m:rgba(28,37,55,.62);--ink:#182235;color:#182235;background:linear-gradient(135deg,#edf2fa,#dfe7f3)}
+body.light .glass{background:rgba(255,255,255,.68);border-color:rgba(50,65,90,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 28px rgba(40,55,85,.1)}
+body.light #q,body.light #ar input,body.light #ps input,body.light #converter input,body.light #converter select{background:rgba(255,255,255,.7);color:#182235;border-color:rgba(30,45,70,.15)}
+body.light .row.sel{background:color-mix(in srgb,var(--a) 17%,white);border-color:color-mix(in srgb,var(--a) 35%,white)}
+body.light #dd{background:rgba(255,255,255,.96);color:#182235}
+body.light #rg button,body.light #tl button,body.light #ft button{color:#27354d}
+body.light #st div{background:rgba(30,45,70,.055)}
+body.light #ft{color:rgba(28,37,55,.65)}
+body.light #converter select option{color:#111}
+body.ticker-mode #main{display:none}
+body.ticker-mode #tabsbar{display:none}
+body.ticker-mode #tickerstrip{display:flex}
+#tickerstrip{display:none;align-items:center;gap:8px;padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.tickitem{display:flex;align-items:center;gap:9px;padding:6px 11px;border-radius:10px;background:rgba(255,255,255,.07);border:1px solid var(--line);cursor:pointer;transition:transform .2s,background .2s}
+.tickitem:hover{transform:translateY(-2px);background:rgba(255,255,255,.12)}
+.tickitem small{color:var(--muted)}.tickitem b{font-variant-numeric:tabular-nums}
+body.ticker-mode #ft{padding-top:4px}
+#ar{flex-wrap:wrap}#ar input{width:85px}
+#pctalert{width:70px!important}
+#alertmode{width:82px!important}
+#alertstatus{color:var(--g)}
+@keyframes softIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.row,.tab,.tickitem{animation:softIn .28s ease both}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 </style></head><body>
 <div id="tb"><span class="logo">◆ Glass Ticker</span>
 <div id="sw"><input id="q" placeholder="Search company or symbol  (Ctrl+K)" autocomplete="off"><div id="dd" class="glass"></div></div>
 <div class="sp"></div>
 <button class="ib" id="so" title="Sort: custom">⇅</button><input id="op" type="range" min="45" max="100" value="100" title="Opacity">
-<button class="ib" id="pin" title="Always on top">📌</button><button class="ib" id="mn">−</button><button class="ib" id="cl">✕</button></div>
+<button class="ib" id="theme" title="Toggle light theme"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button>
+<button class="ib" id="pin" title="Keep window above others"><svg viewBox="0 0 24 24"><path d="m16 3 5 5-4 1-4 4-1 5-3-3-5 5-1-1 5-5-3-3 5-1 4-4z"/></svg></button>
+<button class="ib" id="mn" title="Minimize">−</button><button class="ib" id="max" title="Maximize / restore"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1.5"/></svg></button><button class="ib" id="cl" title="Close">×</button></div>
+<div id="tabsbar"><div id="tabs"></div><button id="addtab" title="New watchlist">＋ Watchlist</button><button id="stripbtn" title="Mini ticker strip">▤ Mini ticker</button></div>
+<div id="tickerstrip"></div>
 <div id="main"><div id="list" class="glass"></div><div id="sp" title="Drag to resize, double click to hide chart"></div>
 <div id="det" class="glass"><div id="hd"><div><div id="nm">&nbsp;</div><div id="px">...</div></div><div id="chg" style="font-size:15px;text-align:right"></div></div>
 <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div id="rg" style="margin:10px 0"></div><div id="tl"><button id="ty" title="Candles / area">Candles</button><button id="sm" title="20-period moving average">SMA</button><button id="nb">News</button></div></div><div id="cw"><canvas id="cv"></canvas><div id="nw"></div></div><div id="st"></div>
-<div id="ar">Alert me at <input id="al" type="number" step="any"><button id="as">Set</button><span id="at"></span></div><div id="ps">Position <input id="pq" type="number" step="any" placeholder="qty"> @ <input id="pc" type="number" step="any" placeholder="avg cost"><button id="pv">Save</button><span id="pt"></span></div></div></div>
+<div id="ar"><span>Alert</span><select id="alertmode"><option value="price">Price target</option><option value="percent">% move</option></select><input id="al" type="number" step="any" placeholder="Price"><input id="pctalert" type="number" step="any" placeholder="± % " style="display:none"><select id="alertdir" style="display:none"><option value="up">Rises by</option><option value="down">Falls by</option></select><button id="as">Set alert</button><span id="at"></span></div><div id="ps">Position <input id="pq" type="number" step="any" placeholder="qty"> @ <input id="pc" type="number" step="any" placeholder="avg cost"><button id="pv">Save</button><span id="pt"></span></div></div></div>
 <div id="ft"><span id="upd">Loading...</span><span>Refresh <select id="iv"><option value="5">5s</option><option value="10">10s</option><option value="30">30s</option><option value="60">60s</option></select></span>
-<label><input type="checkbox" id="au"> Start with Windows</label><span id="pf"></span><label><input type="checkbox" id="tr"> Close to tray</label><label>Accent <input type="color" id="ac"></label><button id="ex">Export</button><button id="im">Import</button><input type="file" id="fi" accept=".json" hidden><span>Ctrl+Shift+G show/hide</span></div>
+<label><input type="checkbox" id="au"> Start with Windows</label><span id="pf"></span><label><input type="checkbox" id="tr"> Close to tray</label><label>Accent <input type="color" id="ac"></label><button id="ex">Export</button><button id="im">Import</button><input type="file" id="fi" accept=".json" hidden><span>Ctrl+Shift+G show/hide</span><div id="converter"><span>Convert</span><input id="convertamount" type="number" value="1" min="0" step="any"><span id="fromcur">—</span><span>→</span><select id="tocur"><option>INR</option><option>USD</option><option>EUR</option><option>GBP</option><option>JPY</option></select><span id="convertresult">—</span></div></div>
 <script>
 const $=s=>document.querySelector(s),esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S=Object.assign({list:['^NSEI','^BSESN','RELIANCE.NS','TCS.NS','INFY.NS','HDFCBANK.NS','AAPL','NVDA','BTC-USD'],sel:'^NSEI',range:'1D',sw:320,alerts:{},iv:10,op:100,top:false,auto:false,solo:false,type:'area',sma:false,hold:{},sort:0,acc:'#8ab4ff',tray:false},JSON.parse(localStorage.getItem('st')||'{}'));
 const save=()=>localStorage.setItem('st',JSON.stringify(S));
+S.watchlists=S.watchlists||[{name:'Main',symbols:[...S.list]}];S.activeWatchlist=Math.min(S.activeWatchlist||0,S.watchlists.length-1);
+S.theme=S.theme||'dark';S.mini=!!S.mini;S.currency=S.currency||'INR';S.pctAlerts=S.pctAlerts||{};
+function syncWatchlist(){if(!S.watchlists[S.activeWatchlist])S.watchlists[S.activeWatchlist]={name:'Main',symbols:[...S.list]};S.watchlists[S.activeWatchlist].symbols=[...S.list];save()}
+function renderTabs(){const el=$('#tabs');el.innerHTML=S.watchlists.map((w,i)=>`<button class="tab ${i===S.activeWatchlist?'active':''}" data-tab="${i}" title="Double-click to rename">${esc(w.name)}</button>`).join('');}
+function switchTab(i){syncWatchlist();S.activeWatchlist=i;S.list=[...S.watchlists[i].symbols];S.sel=S.list[0]||'';save();renderTabs();renderList();poll().then(()=>loadDetail(true));}
+
 const R={'1D':['1d','1m'],'5D':['5d','5m'],'1M':['1mo','30m'],'3M':['3mo','1d'],'6M':['6mo','1d'],'1Y':['1y','1d'],'5Y':['5y','1wk'],'MAX':['max','1mo']};
 const D={};let C={t:[],p:[],m:{}},hov=-1,anim=1,tm;
 const nf=(v,c)=>{if(v==null)return '-';try{return new Intl.NumberFormat(c==='INR'?'en-IN':'en-US',{style:'currency',currency:c,maximumFractionDigits:2}).format(v)}catch{return (+v).toFixed(2)}};
@@ -79,26 +147,85 @@ const rsi=(p,n=14)=>{if(p.length<=n)return null;let g=0,l=0;for(let i=1;i<=n;i++
 const mkt=m=>{const r=m.currentTradingPeriod?.regular,n=Date.now()/1000;return r&&n>=r.start&&n<r.end?'● Open':'○ Closed'};
 const sma=(p,n)=>p.map((_,i)=>i<n-1?null:p.slice(i-n+1,i+1).reduce((a,b)=>a+b)/n);
 const base='https://query1.finance.yahoo.com/';
+// Logo discovery: provider logo -> issuer website favicon -> monogram.
+// Successful and failed lookups are cached locally to avoid repeated network work.
+const LOGO_DOMAINS={
+ '^NSEI':'niftyindices.com','^BSESN':'bseindia.com',
+ 'RELIANCE.NS':'ril.com','TCS.NS':'tcs.com','INFY.NS':'infosys.com','HDFCBANK.NS':'hdfcbank.com',
+ 'ICICIBANK.NS':'icicibank.com','SBIN.NS':'sbi.co.in','BHARTIARTL.NS':'airtel.in','ITC.NS':'itcportal.com',
+ 'LT.NS':'larsentoubro.com','WIPRO.NS':'wipro.com','TATAMOTORS.NS':'tatamotors.com','TATASTEEL.NS':'tatasteel.com',
+ 'MARUTI.NS':'marutisuzuki.com','AXISBANK.NS':'axisbank.com','KOTAKBANK.NS':'kotak.com','HINDUNILVR.NS':'hul.co.in',
+ 'AAPL':'apple.com','MSFT':'microsoft.com','GOOGL':'google.com','GOOG':'google.com','AMZN':'amazon.com',
+ 'NVDA':'nvidia.com','META':'meta.com','TSLA':'tesla.com','NFLX':'netflix.com','AMD':'amd.com',
+ 'INTC':'intel.com','ORCL':'oracle.com','CRM':'salesforce.com','ADBE':'adobe.com','IBM':'ibm.com',
+ 'BTC-USD':'bitcoin.org','ETH-USD':'ethereum.org'
+};
+const logoCache=(()=>{try{return JSON.parse(localStorage.getItem('st_logo_cache')||'{}')}catch{return {}}})();
+const logoPending=new Set(),LOGO_TTL=7*24*60*60*1000;
+function symbolLabel(s){return s.replace(/\.(NS|BO)$/,'').replace(/^\^/,'');}
+function logoFallback(s){const label=symbolLabel(s).slice(0,3).toUpperCase();return `<span class="company-logo logo-fallback" aria-label="${esc(label)}">${esc(label)}</span>`}
+function safeLogoUrl(u){try{const x=new URL(u);return x.protocol==='https:'?x.href:''}catch{return ''}}
+function logoMarkup(s,small=false){
+ const cached=logoCache[s],known=LOGO_DOMAINS[s];
+ if(!cached||Date.now()-cached.at>=LOGO_TTL)resolveLogo(s);
+ const src=safeLogoUrl(cached?.url)||(known?`https://www.google.com/s2/favicons?domain=${encodeURIComponent(known)}&sz=128`:'');
+ if(!src){resolveLogo(s);return logoFallback(s)}
+ const cls='company-logo';
+ return `<img class="${cls}" src="${esc(src)}" alt="${esc(symbolLabel(s))} logo" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.replaceWith(Object.assign(document.createElement('span'),{className:'company-logo logo-fallback',textContent:'${esc(symbolLabel(s).slice(0,3).toUpperCase())}'}))">`;
+}
+function persistLogoCache(){try{localStorage.setItem('st_logo_cache',JSON.stringify(logoCache))}catch{}}
+function normalizedTicker(s){return String(s||'').toUpperCase().replace(/\.(NS|BO)$/,'').replace(/[^A-Z0-9^=-]/g,'')}
+async function resolveLogo(s){
+ if(logoPending.has(s))return;
+ const old=logoCache[s];if(old&&Date.now()-old.at<LOGO_TTL)return;
+ logoPending.add(s);
+ try{
+  let image='',domain=LOGO_DOMAINS[s]||'';
+  // Yahoo search resolves a ticker to the corresponding issuer/security record.
+  const search=await api.get(`https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(symbolLabel(s))}&quotesCount=8&newsCount=0&listsCount=0`);
+  const quotes=Array.isArray(search?.quotes)?search.quotes:[];
+  const match=quotes.find(x=>normalizedTicker(x.symbol)===normalizedTicker(s)) ||
+    quotes.find(x=>normalizedTicker(x.symbol)===normalizedTicker(symbolLabel(s)) && ['EQUITY','ETF','CRYPTOCURRENCY'].includes(x.quoteType));
+  if(match){
+    image=safeLogoUrl(match.logoUrl||match.companyLogoUrl||'');
+    if(!image){
+      try{
+        const q=await api.get(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(match.symbol)}&fields=logoUrl,companyLogoUrl,website`);
+        const item=q?.quoteResponse?.result?.[0];
+        image=safeLogoUrl(item?.logoUrl||item?.companyLogoUrl||'');
+        if(!domain&&item?.website){try{domain=new URL(item.website.startsWith('http')?item.website:`https://${item.website}`).hostname.replace(/^www\./,'')}catch{}}
+      }catch{}
+    }
+    if(!domain&&match.website){try{domain=new URL(match.website.startsWith('http')?match.website:`https://${match.website}`).hostname.replace(/^www\./,'')}catch{}}
+  }
+  // The issuer's own domain is a useful logo source when Yahoo has no logo asset.
+  if(!image&&domain)image=`https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`;
+  logoCache[s]={url:safeLogoUrl(image),at:Date.now(),domain:domain||''};persistLogoCache();
+  if(image){renderList();renderStrip();if(S.sel===s)loadDetail(false)}
+ }catch(e){logoCache[s]={url:'',at:Date.now()};persistLogoCache()}
+ finally{logoPending.delete(s)}
+}
+
 async function q(s,r,i){const j=await api.get(`${base}v8/finance/chart/${encodeURIComponent(s)}?range=${r}&interval=${i}`);const x=j.chart.result[0],c=x.indicators.quote[0],t=[],p=[],o=[],h=[],l=[],vv=[];
  x.timestamp.forEach((v,k)=>{if(c.close[k]!=null){t.push(v*1000);p.push(c.close[k]);o.push(c.open[k]??c.close[k]);h.push(c.high[k]??c.close[k]);l.push(c.low[k]??c.close[k]);vv.push(c.volume[k]||0)}});return{m:x.meta,t,p,o,h,l,v:vv}}
 let bad=0;async function poll(){bad=0;
  await Promise.all(S.list.map(async s=>{try{const d=await q(s,'1d','5m'),o=D[s]?.price,n=d.m.regularMarketPrice;
   D[s]={price:n,prev:d.m.chartPreviousClose,spark:d.p,cur:d.m.currency,name:d.m.shortName||s,flash:o==null?0:Math.sign(n-o)}}catch(e){bad++}}));
- renderList();checkAlerts();$('#upd').textContent=bad&&bad===S.list.length?'⚠ Offline, retrying…':'Updated '+new Date().toLocaleTimeString();pf();const d=D[S.sel];d&&api.win('tip',S.sel+'  '+nf(d.price,d.cur))}
+ renderList();renderStrip();convertCurrency();checkAlerts();$('#upd').textContent=bad&&bad===S.list.length?'⚠ Offline, retrying…':'Updated '+new Date().toLocaleTimeString();pf();const d=D[S.sel];d&&api.win('tip',S.sel+'  '+nf(d.price,d.cur))}
 function spark(a,up){if(!a||a.length<2)return '<svg></svg>';const lo=Math.min(...a),hi=Math.max(...a),n=a.length;
  return `<svg width="70" height="24"><polyline fill="none" stroke="${up?'#34d399':'#f87171'}" stroke-width="1.6" stroke-linejoin="round" points="${a.map((v,i)=>(i/(n-1)*70).toFixed(1)+','+(22-(v-lo)/((hi-lo)||1)*20).toFixed(1)).join(' ')}"/></svg>`}
 function renderList(){const l=$('#list'),top=l.scrollTop;
- l.innerHTML=ord().map(s=>{const d=D[s],sh=esc(s.replace(/\.(NS|BO)$/,''));if(!d)return `<div class="row" data-s="${esc(s)}"><div><b>${sh}</b><div class="sub">loading...</div></div></div>`;
+ l.innerHTML=ord().map(s=>{const d=D[s],sh=esc(symbolLabel(s));if(!d)return `<div class="row" data-s="${esc(s)}" draggable="true"><span class="grip">⠿</span><div class="identity">${logoMarkup(s)}<div><b>${sh}</b><div class="sub">loading...</div></div></div></div>`;
   const ch=d.price-d.prev,pc=ch/d.prev*100,up=ch>=0;
-  return `<div class="row ${s===S.sel?'sel':''} ${d.flash>0?'fu':d.flash<0?'fd':''}" data-s="${esc(s)}"><div><b>${sh}</b><div class="sub">${esc(d.name)}</div></div>${spark(d.spark,up)}<div class="pr"><b>${nf(d.price,d.cur)}</b><div class="${up?'up':'dn'}">${up?'▲':'▼'} ${Math.abs(pc).toFixed(2)}%</div></div><span class="x" data-x="${esc(s)}">✕</span></div>`}).join('');
+  return `<div class="row ${s===S.sel?'sel':''} ${d.flash>0?'fu':d.flash<0?'fd':''}" data-s="${esc(s)}" draggable="true"><span class="grip">⠿</span><div class="identity">${logoMarkup(s)}<div><b>${sh}</b><div class="sub">${esc(d.name)}</div></div></div>${spark(d.spark,up)}<div class="pr"><b>${nf(d.price,d.cur)}</b><div class="${up?'up':'dn'}">${up?'▲':'▼'} ${Math.abs(pc).toFixed(2)}%</div></div><span class="x" data-x="${esc(s)}">✕</span></div>`}).join('');
  Object.values(D).forEach(d=>d.flash=0);l.scrollTop=top}
-$('#list').onclick=e=>{const x=e.target.dataset.x;if(x){S.list=S.list.filter(v=>v!==x);if(S.sel===x)S.sel=S.list[0];save();renderList();loadDetail(true);return}
+$('#list').onclick=e=>{const x=e.target.dataset.x;if(x){S.list=S.list.filter(v=>v!==x);syncWatchlist();if(S.sel===x)S.sel=S.list[0];save();renderList();loadDetail(true);return}
  const r=e.target.closest('.row');if(r)pick(r.dataset.s)};
 function pick(s){S.sel=s;save();renderList();loadDetail(true)}
 const fmtT=t=>new Date(t).toLocaleString([],S.range==='1D'?{hour:'2-digit',minute:'2-digit'}:S.range==='5D'||S.range==='1M'?{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}:{month:'short',day:'numeric',year:'2-digit'});
 async function loadDetail(an){const s=S.sel;if(!s)return;try{const d=await q(s,...R[S.range]);if(s!==S.sel)return;C=d;const m=d.m,p=d.p,cur=m.currency;
  const ref=S.range==='1D'?m.chartPreviousClose:p[0],pr=m.regularMarketPrice,ch=pr-ref,up=ch>=0;
- $('#nm').textContent=(m.longName||m.shortName||s)+'  ·  '+(m.fullExchangeName||'')+'  ·  '+mkt(m);$('#px').textContent=nf(pr,cur);
+ $('#nm').innerHTML=logoMarkup(s)+`<span>${esc(m.longName||m.shortName||s)} <span style=\"opacity:.55;font-weight:400\">· ${esc(m.fullExchangeName||'')} · ${mkt(m)}</span></span>`;$('#px').textContent=nf(pr,cur);
  $('#chg').innerHTML=`<span class="${up?'up':'dn'}">${up?'▲':'▼'} ${nf(Math.abs(ch),cur)} (${(ch/ref*100).toFixed(2)}%)</span>`;
  const st=[['Day high',m.regularMarketDayHigh],['Day low',m.regularMarketDayLow],['52W high',m.fiftyTwoWeekHigh],['52W low',m.fiftyTwoWeekLow],['Prev close',m.chartPreviousClose]];
  $('#st').innerHTML=st.map(([k,v])=>`<div><small>${k}</small>${nf(v,cur)}</div>`).join('')+`<div><small>Volume</small>${m.regularMarketVolume?.toLocaleString()||'-'}</div><div><small>RSI (14)</small>${rsi(p)?.toFixed(1)||'-'}</div><div><small>Range ${S.range}</small>${nf(Math.min(...d.l),cur)} – ${nf(Math.max(...d.h),cur)}</div>`;
@@ -130,9 +257,11 @@ function draw(){const cv=$('#cv'),dpr=devicePixelRatio,w=cv.clientWidth,h=cv.cli
   x.fillStyle='rgba(20,26,44,.9)';x.beginPath();x.roundRect(bx,PAD.t,tw,24,8);x.fill();x.fillStyle='#fff';x.fillText(tx,bx+9,PAD.t+16)}}
 $('#cv').onmousemove=e=>{const w=$('#cv').clientWidth,n=C.p.length;if(n<2)return;hov=Math.max(0,Math.min(n-1,Math.floor((e.offsetX-PAD.l)/(w-PAD.l-PAD.r)*n)));draw()};
 $('#cv').onmouseleave=()=>{hov=-1;draw()};new ResizeObserver(draw).observe($('#cw'));
-function showAlert(){const a=S.alerts[S.sel];$('#at').textContent=a?`Active: ${a.dir>0?'rises to':'falls to'} ${a.px}`:''}
-$('#as').onclick=()=>{const v=parseFloat($('#al').value),d=D[S.sel];if(!v||!d)return;S.alerts[S.sel]={px:v,dir:v>d.price?1:-1};save();$('#al').value='';showAlert()};
-function checkAlerts(){for(const s in S.alerts){const a=S.alerts[s],d=D[s];if(d&&(a.dir>0?d.price>=a.px:d.price<=a.px)){new Notification('Price alert: '+s,{body:`${s} is at ${nf(d.price,d.cur)} (target ${a.px})`});delete S.alerts[s];save();showAlert()}}}
+function showAlert(){const a=S.alerts[S.sel],p=S.pctAlerts[S.sel];$('#at').textContent=a?`Price: ${a.dir>0?'rises to':'falls to'} ${a.px}`:p?`Move: ${p.dir==='up'?'+':'−'}${p.pct}%`:'No active alert'}
+$('#alertmode').onchange=()=>{const pct=$('#alertmode').value==='percent';$('#al').style.display=pct?'none':'inline-block';$('#pctalert').style.display=pct?'inline-block':'none';$('#alertdir').style.display=pct?'inline-block':'none'};
+$('#as').onclick=()=>{const d=D[S.sel];if(!d)return;if($('#alertmode').value==='percent'){const pct=Math.abs(parseFloat($('#pctalert').value));if(!pct)return;S.pctAlerts[S.sel]={pct,dir:$('#alertdir').value,base:d.price};}else{const v=parseFloat($('#al').value);if(!v)return;S.alerts[S.sel]={px:v,dir:v>d.price?1:-1};}save();$('#al').value='';$('#pctalert').value='';showAlert()};
+function checkAlerts(){for(const s in S.alerts){const a=S.alerts[s],d=D[s];if(d&&(a.dir>0?d.price>=a.px:d.price<=a.px)){new Notification('Price alert: '+s,{body:`${s} is at ${nf(d.price,d.cur)} (target ${a.px})`});delete S.alerts[s];save();showAlert()}}
+for(const s in S.pctAlerts){const a=S.pctAlerts[s],d=D[s];if(d){const move=(d.price/a.base-1)*100,hit=a.dir==='up'?move>=a.pct:move<=-a.pct;if(hit){new Notification('Move alert: '+s,{body:`${s} moved ${move.toFixed(2)}%`});delete S.pctAlerts[s];save();showAlert()}}}}
 let sd;const dd=$('#dd');
 $('#q').oninput=e=>{clearTimeout(sd);const v=e.target.value.trim();if(!v){dd.style.display='none';return}
  sd=setTimeout(async()=>{try{const j=await api.get(`${base}v1/finance/search?q=${encodeURIComponent(v)}&quotesCount=8&newsCount=0`);
@@ -140,8 +269,8 @@ $('#q').oninput=e=>{clearTimeout(sd);const v=e.target.value.trim();if(!v){dd.sty
 dd.onmousedown=e=>{const r=e.target.closest('[data-s]');if(r)add(r.dataset.s)};
 $('#q').onkeydown=e=>{if(e.key==='Enter'){const f=dd.querySelector('[data-s]');if(f)add(f.dataset.s)}if(e.key==='Escape'){dd.style.display='none';e.target.blur()}};
 $('#q').onblur=()=>setTimeout(()=>dd.style.display='none',150);
-async function add(s){if(!S.list.includes(s))S.list.unshift(s);S.sel=s;save();$('#q').value='';dd.style.display='none';await poll();loadDetail(true)}
-addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='k'){e.preventDefault();$('#q').focus();$('#q').select()}
+async function add(s){if(!S.list.includes(s))S.list.unshift(s);S.sel=s;syncWatchlist();save();$('#q').value='';dd.style.display='none';await poll();loadDetail(true)}
+addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='m'){e.preventDefault();$('#stripbtn').click()}if(e.ctrlKey&&e.key==='k'){e.preventDefault();$('#q').focus();$('#q').select()}
  if(document.activeElement.tagName==='INPUT')return;const L=ord(),i=L.indexOf(S.sel);if(e.key==='ArrowDown'&&i<L.length-1)pick(L[i+1]);if(e.key==='ArrowUp'&&i>0)pick(L[i-1])});
 let PS='',nv=false,NW={s:''};
 const sgn=(v,c)=>(v>=0?'+':'−')+nf(Math.abs(v),c);
@@ -153,23 +282,41 @@ function pf(){const T={};for(const s in S.hold){const d=D[s],h=S.hold[s];if(!d||
 async function news(){if(!nv||NW.s===S.sel)return;NW.s=S.sel;const el=$('#nw');el.innerHTML='<div class="ni">Loading…</div>';try{const j=await api.get(`${base}v1/finance/search?q=${encodeURIComponent(S.sel)}&quotesCount=0&newsCount=10`);if(NW.s!==S.sel)return;
  el.innerHTML=(j.news||[]).map(n=>`<div class="ni" data-u="${esc(n.link)}">${esc(n.title)}<br><small>${esc(n.publisher||'')} · ${new Date(n.providerPublishTime*1000).toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</small></div>`).join('')||'<div class="ni">No news found</div>'}catch{el.innerHTML='<div class="ni">Could not load news</div>';NW.s=''}}
 $('#nw').onclick=e=>{const n=e.target.closest('[data-u]');n&&api.open(n.dataset.u)};
+
+// Watchlists, reorder interactions, mini ticker and currency conversion
+$('#tabs').onclick=e=>{const b=e.target.closest('[data-tab]');if(b)switchTab(+b.dataset.tab)};
+$('#tabs').ondblclick=e=>{const b=e.target.closest('[data-tab]');if(!b)return;const i=+b.dataset.tab,n=prompt('Rename watchlist',S.watchlists[i].name);if(n&&n.trim()){S.watchlists[i].name=n.trim().slice(0,24);save();renderTabs()}};
+$('#addtab').onclick=()=>{const n=prompt('Name this watchlist','Watchlist '+(S.watchlists.length+1));if(!n||!n.trim())return;syncWatchlist();S.watchlists.push({name:n.trim().slice(0,24),symbols:[]});switchTab(S.watchlists.length-1)};
+let dragSymbol=null;
+$('#list').ondragstart=e=>{const r=e.target.closest('.row');if(!r)return;dragSymbol=r.dataset.s;r.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragSymbol)};
+$('#list').ondragend=e=>{e.target.closest('.row')?.classList.remove('dragging');document.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'))};
+$('#list').ondragover=e=>{e.preventDefault();const r=e.target.closest('.row');document.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));if(r&&r.dataset.s!==dragSymbol)r.classList.add('drop-target')};
+$('#list').ondrop=e=>{e.preventDefault();const r=e.target.closest('.row');if(!r||!dragSymbol||r.dataset.s===dragSymbol)return;const from=S.list.indexOf(dragSymbol),to=S.list.indexOf(r.dataset.s);if(from<0||to<0)return;S.list.splice(from,1);S.list.splice(to,0,dragSymbol);dragSymbol=null;syncWatchlist();renderList()};
+function renderStrip(){const el=$('#tickerstrip');el.innerHTML=ord().map(s=>{const d=D[s];if(!d)return '';const pct=(d.price-d.prev)/d.prev*100,up=pct>=0;return `<div class=\"tickitem\" data-tick=\"${esc(s)}\">${logoMarkup(s)}<b>${esc(symbolLabel(s))}</b><b>${nf(d.price,d.cur)}</b><small class=\"${up?'up':'dn'}\">${up?'▲':'▼'} ${Math.abs(pct).toFixed(2)}%</small></div>`}).join('')}
+$('#tickerstrip').onclick=e=>{const t=e.target.closest('[data-tick]');if(t){document.body.classList.remove('ticker-mode');S.mini=false;pick(t.dataset.tick);save()}};
+$('#stripbtn').onclick=()=>{S.mini=!S.mini;document.body.classList.toggle('ticker-mode',S.mini);$('#stripbtn').textContent=S.mini?'▣ Full app':'▤ Mini ticker';save();renderStrip()};
+async function convertCurrency(){const d=D[S.sel];if(!d)return;const from=d.cur||'USD',to=$('#tocur').value,amount=+( $('#convertamount').value||0);$('#fromcur').textContent=from;if(from===to){$('#convertresult').textContent=nf(amount,to);return}
+try{const pair=from+to+'=X',j=await api.get(`${base}v8/finance/chart/${encodeURIComponent(pair)}?range=1d&interval=1d`),rate=j.chart.result[0].meta.regularMarketPrice;$('#convertresult').textContent=nf(amount*rate,to)}catch{$('#convertresult').textContent='Unavailable'}}
+$('#tocur').onchange=convertCurrency;$('#convertamount').oninput=convertCurrency;
 function initUI(){const m=()=>{$('#ty').classList.toggle('on',S.type==='candle');$('#sm').classList.toggle('on',S.sma);$('#nb').classList.toggle('on',nv);$('#nw').classList.toggle('on',nv);$('#cw').classList.toggle('cv-off',nv);$('#so').title='Sort: '+['custom','% change','name'][S.sort]};
  $('#ty').onclick=()=>{S.type=S.type==='candle'?'area':'candle';save();m();draw()};$('#sm').onclick=()=>{S.sma=!S.sma;save();m();draw()};
  $('#nb').onclick=()=>{nv=!nv;NW.s='';m();news()};$('#so').onclick=()=>{S.sort=(S.sort+1)%3;save();m();renderList()};m();
  const ac=$('#ac');ac.value=S.acc;document.documentElement.style.setProperty('--a',S.acc);ac.oninput=()=>{S.acc=ac.value;document.documentElement.style.setProperty('--a',S.acc);save();draw()};
+ document.body.classList.toggle('light',S.theme==='light');$('#theme').onclick=()=>{S.theme=S.theme==='light'?'dark':'light';document.body.classList.toggle('light',S.theme==='light');save();draw()};
  $('#tr').checked=S.tray;api.win('tray',S.tray);$('#tr').onchange=e=>{S.tray=e.target.checked;api.win('tray',S.tray);save()};
- $('#ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({list:S.list,hold:S.hold,alerts:S.alerts},null,1)],{type:'application/json'}));a.download='glass-ticker-backup.json';a.click()};
+ $('#ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({list:S.list,watchlists:S.watchlists,activeWatchlist:S.activeWatchlist,hold:S.hold,alerts:S.alerts,pctAlerts:S.pctAlerts},null,1)],{type:'application/json'}));a.download='glass-ticker-backup.json';a.click()};
  $('#im').onclick=()=>$('#fi').click();
  $('#fi').onchange=async e=>{try{const j=JSON.parse(await e.target.files[0].text()),ok=v=>typeof v==='string'&&/^[\w.^=\-]{1,20}$/.test(v);
-  if(Array.isArray(j.list))S.list=[...new Set(j.list.filter(ok))];S.sel=S.list[0];
+  if(Array.isArray(j.list))S.list=[...new Set(j.list.filter(ok))];if(Array.isArray(j.watchlists)&&j.watchlists.length)S.watchlists=j.watchlists.filter(w=>w&&typeof w.name==='string'&&Array.isArray(w.symbols)).map(w=>({name:w.name.slice(0,24),symbols:[...new Set(w.symbols.filter(ok))]}));if(Number.isInteger(j.activeWatchlist))S.activeWatchlist=Math.max(0,Math.min(S.watchlists.length-1,j.activeWatchlist));S.sel=S.list[0];
   for(const k in j.hold||{})if(ok(k)&&j.hold[k].q>0&&j.hold[k].c>=0)S.hold[k]={q:+j.hold[k].q,c:+j.hold[k].c};
-  for(const k in j.alerts||{})if(ok(k)&&isFinite(j.alerts[k].px))S.alerts[k]={px:+j.alerts[k].px,dir:j.alerts[k].dir>0?1:-1};
-  save();await poll();loadDetail(true)}catch{$('#upd').textContent='⚠ Invalid backup file'}e.target.value=''}}
+  for(const k in j.alerts||{})if(ok(k)&&isFinite(j.alerts[k].px))S.alerts[k]={px:+j.alerts[k].px,dir:j.alerts[k].dir>0?1:-1};for(const k in j.pctAlerts||{})if(ok(k)&&isFinite(j.pctAlerts[k].pct)&&j.pctAlerts[k].base>0)S.pctAlerts[k]={pct:+j.pctAlerts[k].pct,dir:j.pctAlerts[k].dir==='up'?'up':'down',base:+j.pctAlerts[k].base};
+  syncWatchlist();save();await poll();loadDetail(true)}catch{$('#upd').textContent='⚠ Invalid backup file'}e.target.value=''}}
+$('#tb .logo').ondblclick=()=>api.win('max');
 const sp=$('#sp');sp.onmousedown=e=>{sp.classList.add('d');const mv=ev=>{S.sw=Math.max(210,Math.min(innerWidth-300,ev.clientX-10));document.documentElement.style.setProperty('--sw',S.sw+'px')};
  const up=()=>{sp.classList.remove('d');removeEventListener('mousemove',mv);removeEventListener('mouseup',up);save();draw()};addEventListener('mousemove',mv);addEventListener('mouseup',up)};
 sp.ondblclick=()=>{S.solo=!S.solo;document.body.classList.toggle('solo',S.solo);save();draw()};
 $('#list').ondblclick=()=>{if(S.solo){S.solo=false;document.body.classList.remove('solo');save();draw()}};
-$('#mn').onclick=()=>api.win('min');$('#cl').onclick=()=>api.win('close');
+$('#mn').onclick=()=>api.win('min');$('#max').onclick=()=>api.win('max');$('#cl').onclick=()=>api.win('close');
 $('#pin').onclick=()=>{S.top=!S.top;$('#pin').classList.toggle('on',S.top);api.win('top',S.top);save()};
 $('#op').oninput=e=>{S.op=+e.target.value;api.win('op',S.op/100);save()};
 $('#au').onchange=e=>{S.auto=e.target.checked;api.win('auto',S.auto);save()};
@@ -177,5 +324,5 @@ $('#iv').onchange=e=>{S.iv=+e.target.value;save();sched()};
 let sk=0;function tick(){if(document.hidden&&++sk%6)return;poll();loadDetail(false)}function sched(){clearInterval(tm);tm=setInterval(tick,S.iv*1000)}
 document.documentElement.style.setProperty('--sw',S.sw+'px');document.body.classList.toggle('solo',S.solo);
 $('#pin').classList.toggle('on',S.top);api.win('top',S.top);$('#op').value=S.op;api.win('op',S.op/100);$('#au').checked=S.auto;$('#iv').value=S.iv;
-initUI();renderList();poll().then(()=>loadDetail(true));sched();
+initUI();renderTabs();document.body.classList.toggle('ticker-mode',S.mini);$('#stripbtn').textContent=S.mini?'▣ Full app':'▤ Mini ticker';renderList();poll().then(()=>loadDetail(true));sched();
 </script></body></html>

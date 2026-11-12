@@ -25,6 +25,7 @@ ipcMain.handle('get',async(_,u)=>{
 ipcMain.handle('open',(_,u)=>{if(typeof u==='string'&&/^https:\/\//.test(u))shell.openExternal(u)});
 ipcMain.handle('win',(_,c,v)=>{
   if(c==='min')win.minimize();
+  if(c==='max'){if(win.isMaximized())win.unmaximize();else win.maximize();}
   if(c==='close')win.close();
   if(c==='top')win.setAlwaysOnTop(!!v);
   if(c==='op')win.setOpacity(Math.min(1,Math.max(.4,+v||1)));
