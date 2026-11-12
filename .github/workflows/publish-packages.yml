@@ -30,7 +30,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REGISTRY: https://npm.pkg.github.com
-          SCOPED_NAME: @${{ github.repository_owner }}/glass-ticker
+          SCOPED_NAME: "@${{ github.repository_owner }}/glass-ticker"
         run: |
           set -euo pipefail
           work="$RUNNER_TEMP/npm-package"
@@ -72,8 +72,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
-          NPM_NAME: ${{ github.repository_owner }}/glass-ticker
-          MAVEN_NAME: com.github.${{ github.repository_owner }}:glass-ticker-launcher
+          NPM_NAME: "${{ github.repository_owner }}/glass-ticker"
+          MAVEN_NAME: "com.github.${{ github.repository_owner }}:glass-ticker-launcher"
         run: |
           set -uo pipefail
           # GitHub Packages defaults to private - flip both to public so
@@ -132,9 +132,9 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --upgrade build twine
-          python -m build --outdir dist packages/python
-          twine check dist/*
-          twine upload --non-interactive dist/*
+          python -m build --outdir dist-python packages/python
+          twine check dist-python/*
+          twine upload --non-interactive dist-python/*
 
       - name: Publish to Maven Central
         if: ${{ secrets.CENTRAL_TOKEN != '' }}
