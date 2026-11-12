@@ -1,2 +1,2 @@
 const {contextBridge,ipcRenderer}=require('electron');
-contextBridge.exposeInMainWorld('api',{get:u=>ipcRenderer.invoke('get',u),open:u=>ipcRenderer.invoke('open',u),win:(c,v)=>ipcRenderer.invoke('win',c,v)});
+contextBridge.exposeInMainWorld('api',{get:u=>ipcRenderer.invoke('get',u),open:u=>ipcRenderer.invoke('open',u),win:(c,v)=>ipcRenderer.invoke('win',c,v),pinWidget:(p,hideMain=false)=>ipcRenderer.invoke('pin-widget',p,hideMain),updateWidget:p=>ipcRenderer.send('widget-update',p),closeWidget:()=>ipcRenderer.invoke('widget-close'),onWidgetData:fn=>ipcRenderer.on('widget:data',(_,p)=>fn(p))});

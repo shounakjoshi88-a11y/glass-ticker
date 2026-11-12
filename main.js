@@ -3,6 +3,7 @@ const fs=require('fs'),path=require('path');
 app.setAppUserModelId('com.shounak.glassticker');
 if(!app.requestSingleInstanceLock()){app.quit();return}
 let win,tray,toTray=false,quitting=false;
+const pinnedWidgets=new Map(); let widgetSeq=0;
 const icon=path.join(__dirname,'icon.png'),cfg=()=>path.join(app.getPath('userData'),'win.json');
 const show=()=>{win.show();win.focus()};
 function createWindow(){
@@ -23,6 +24,20 @@ ipcMain.handle('get',async(_,u)=>{
   if(!r.ok)throw new Error('HTTP '+r.status);return r.json();
 });
 ipcMain.handle('open',(_,u)=>{if(typeof u==='string'&&/^https:\/\//.test(u))shell.openExternal(u)});
+ipcMain.handle('pin-widget',(event,payload,hideMain=false)=>{
+  const point=require('electron').screen.getCursorScreenPoint();
+  const id=String(++widgetSeq);
+  const w=new BrowserWindow({width:300,height:190,x:Math.max(0,point.x-150),y:Math.max(0,point.y-70),
+    frame:false,transparent:true,backgroundColor:'#00000000',resizable:true,minWidth:230,minHeight:145,
+    alwaysOnTop:true,skipTaskbar:true,hasShadow:false,show:false,
+    webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,sandbox:true}});
+  w.setAlwaysOnTop(true,'floating'); w.setVisibleOnAllWorkspaces(true,{visibleOnFullScreen:true});
+  pinnedWidgets.set(id,w); w.loadFile('widget.html');
+  w.webContents.once('did-finish-load',()=>{w.webContents.send('widget:data',payload);w.showInactive()});
+  w.on('closed',()=>pinnedWidgets.delete(id)); if(hideMain)setTimeout(()=>{if(win&&!win.isDestroyed())win.hide()},120); return id;
+});
+ipcMain.on('widget-update',(_,payload)=>{for(const w of pinnedWidgets.values())if(!w.isDestroyed())w.webContents.send('widget:data',payload)});
+ipcMain.handle('widget-close',event=>{const w=BrowserWindow.fromWebContents(event.sender);if(w&&w!==win)w.close()});
 ipcMain.handle('win',(_,c,v)=>{
   if(c==='min')win.minimize();
   if(c==='max'){if(win.isMaximized())win.unmaximize();else win.maximize();}

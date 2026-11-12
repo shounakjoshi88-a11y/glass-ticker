@@ -1,6 +1,6 @@
 {
   "name": "glass-ticker",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Glass Ticker - a frameless acrylic desktop market ticker for Windows",
   "author": "Shounak",
   "license": "MIT",
@@ -25,6 +25,7 @@
       "main.js",
       "preload.js",
       "index.html",
+      "widget.html",
       "icon.png"
     ],
     "win": {
