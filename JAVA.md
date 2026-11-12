@@ -16,14 +16,14 @@ a frameless acrylic desktop market ticker for Windows.
 ## Run it
 
 ```bash
-mvn dependency:get -Dartifact=io.github.shounakjoshi88:glass-ticker-launcher:2.0.0
+mvn dependency:get -Dartifact=com.github.shounakjoshi88:glass-ticker-launcher:2.0.0
 java -jar ~/.m2/repository/io/github/shounakjoshi88/glass-ticker-launcher/2.0.0/glass-ticker-launcher-2.0.0.jar
 ```
 
 Or call it from code:
 
 ```java
-io.github.shounakjoshi88.glassticker.Launcher.main(new String[] { "install" });
+com.github.shounakjoshi88.glassticker.Launcher.main(new String[] { "install" });
 ```
 
 | Command | What it does |

@@ -51,6 +51,21 @@ Grab `GlassTicker.exe` from the
 Each release also publishes `release.json` with the binary's SHA-256 and
 `GlassTicker.exe.sha256` for command line checks.
 
+**GitHub Packages** - every tag also publishes the npm and Maven wrappers to
+this repository's own package registry:
+
+```bash
+npm install @shounakjoshi88-a11y/glass-ticker --registry=https://npm.pkg.github.com
+```
+
+```xml
+<dependency>
+  <groupId>com.github.shounakjoshi88</groupId>
+  <artifactId>glass-ticker-launcher</artifactId>
+  <version>2.3.0</version>
+</dependency>
+```
+
 All the language wrappers fetch `release.json` first and verify the download
 against that hash - a mismatched file is deleted instead of executed.
 
@@ -88,11 +103,11 @@ so treat the number as an indication rather than a tick.
 ```
 index.html, main.js, preload.js     the app
 icon.png, build/icon.ico            icons
+pom.xml, src/                       Maven launcher module
 packaging/winget/                   winget-pkgs manifest (submitted upstream)
 packaging/scoop/                    scoop bucket (published as its own repo)
 packages/npm/glass-ticker/          npm wrapper package
 packages/python/                    PyPI wrapper package
-packages/java/                      Maven launcher module
 tools/check-exe-icon.ps1            verifies the icon is embedded in a built exe
 ```
 

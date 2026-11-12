@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>io.github.shounakjoshi88</groupId>
+  <groupId>com.github.shounakjoshi88</groupId>
   <artifactId>glass-ticker-launcher</artifactId>
   <version>2.3.0</version>
   <packaging>jar</packaging>
@@ -50,7 +50,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>io.github.shounakjoshi88.glassticker.Launcher</mainClass>
+              <mainClass>com.github.shounakjoshi88.glassticker.Launcher</mainClass>
             </manifest>
           </archive>
         </configuration>

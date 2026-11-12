@@ -1,4 +1,4 @@
-package io.github.shounakjoshi88.glassticker;
+package com.github.shounakjoshi88.glassticker;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -16,8 +16,8 @@ Bump the version in all three places so they stay in step:
 | --- | --- |
 | `packages/npm/glass-ticker/package.json` | `version` |
 | `packages/python/pyproject.toml` | `project.version` |
-| `packages/java/pom.xml` | `<version>` |
-| `packages/java/src/.../Launcher.java` | `VERSION` |
+| `packages/java/pom.xml` → `pom.xml` | `<version>` |
+| `src/main/java/com/github/shounakjoshi88/glassticker/Launcher.java` | `VERSION` |
 | `packages/python/src/glass_ticker/__init__.py` | `__version__` |
 
 ## npm
@@ -59,8 +59,8 @@ executable itself is downloaded on first run.
 ## Maven Central
 
 ```bash
-cd packages/java
-mvn package                 # builds target/glass-ticker-launcher-2.0.0.jar
+cd .
+mvn package                 # builds target/glass-ticker-launcher-2.3.0.jar
 mvn -Prelease deploy        # publishes to Central
 ```
 
@@ -101,6 +101,13 @@ winget validate --manifest .\packaging\winget\manifests\s\ShounakJoshi\GlassTick
 
 Then open a pull request against `microsoft/winget-pkgs` with the title
 `New package: ShounakJoshi.GlassTicker version X.Y.Z`.
+
+## GitHub Packages (automatic)
+
+.github/workflows/publish-packages.yml runs on every * tag and publishes
+the npm and Maven wrappers to this repository's GitHub Packages registry with
+the built-in GITHUB_TOKEN, then flips both to public. Nothing to configure -
+the packages show up under the repository's *Packages* tab.
 
 ## After every release
 
