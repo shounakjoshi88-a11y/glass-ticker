@@ -1,0 +1,33 @@
+name: build
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  win:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      # Builds on Windows so rcedit can embed build/icon.ico into the exe.
+      # Building on Linux skips that step and ships a generic icon.
+      - run: npm run dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GlassTicker
+          path: dist/GlassTicker.exe
+          if-no-files-found: error
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/GlassTicker.exe
+          draft: false
+          generate_release_notes: true

@@ -1,0 +1,181 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Glass Ticker</title><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:">
+<style>
+*{box-sizing:border-box;margin:0}
+:root{--a:#8ab4ff;--g:#34d399;--r:#f87171;--sw:320px;--m:rgba(255,255,255,.55)}
+html,body{height:100%;overflow:hidden}
+body{font:13px 'Segoe UI Variable','Segoe UI',sans-serif;color:rgba(255,255,255,.93);background:linear-gradient(135deg,rgba(50,60,110,.4),rgba(12,16,30,.55));display:flex;flex-direction:column;user-select:none}
+button,input,select{font:inherit;color:inherit}
+.glass{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;backdrop-filter:blur(22px) saturate(150%);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 10px 28px rgba(0,0,0,.22)}
+#tb{display:flex;align-items:center;gap:10px;padding:8px 10px 6px 14px;-webkit-app-region:drag}
+#tb>*{-webkit-app-region:no-drag}#tb .logo{-webkit-app-region:drag;font-weight:600;letter-spacing:.4px}
+#sw{position:relative;flex:1;max-width:400px}
+#q{width:100%;padding:7px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);outline:0;transition:.25s;user-select:text}
+#q:focus{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.35);box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 28%,transparent)}
+#dd{position:absolute;top:38px;left:0;right:0;z-index:9;padding:4px;display:none;background:rgba(28,34,54,.88)}
+#dd div{padding:7px 10px;border-radius:9px;cursor:pointer;display:flex;justify-content:space-between;gap:8px}
+#dd div:hover,#dd .on{background:rgba(255,255,255,.12)}
+.sp{flex:1;-webkit-app-region:drag}
+.ib{background:none;border:0;width:30px;height:28px;border-radius:8px;cursor:pointer;transition:.2s;opacity:.8}
+.ib:hover{background:rgba(255,255,255,.14);opacity:1}.ib.on{background:color-mix(in srgb,var(--a) 40%,transparent)}#cl:hover{background:#e5484d}
+input[type=range]{width:70px;accent-color:var(--a)}
+#main{flex:1;display:flex;min-height:0;padding:0 10px}
+#list{width:var(--sw);min-width:210px;overflow:auto;padding:6px}
+#sp{width:10px;cursor:col-resize;display:flex;align-items:center;justify-content:center}
+#sp::after{content:'';width:3px;height:36px;border-radius:3px;background:rgba(255,255,255,.2);transition:.25s}
+#sp:hover::after,#sp.d::after{background:rgba(255,255,255,.55);height:60px}
+#det{flex:1;min-width:260px;padding:14px 16px;display:flex;flex-direction:column;min-height:0}
+.solo #det,.solo #sp{display:none}.solo #list{width:100%}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:6px}
+.row{position:relative;display:grid;grid-template-columns:1fr 70px auto;gap:10px;align-items:center;padding:9px 10px;border-radius:12px;cursor:pointer;transition:background .2s,transform .2s;border:1px solid transparent}
+.row:hover{background:rgba(255,255,255,.08);transform:translateX(2px)}
+.row.sel{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.2)}
+.sub{color:var(--m);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+.pr{text-align:right}.up{color:var(--g)}.dn{color:var(--r)}
+.x{position:absolute;right:4px;top:3px;font-size:9px;opacity:0;padding:2px 4px;border-radius:6px}.row:hover .x{opacity:.6}.x:hover{opacity:1!important;background:rgba(255,255,255,.15)}
+@keyframes fu{0%{background:rgba(52,211,153,.38)}100%{background:transparent}}
+@keyframes fd{0%{background:rgba(248,113,113,.38)}100%{background:transparent}}
+.fu{animation:fu 1.1s ease-out}.fd{animation:fd 1.1s ease-out}
+#hd{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+#nm{font-size:15px;font-weight:600}#px{font-size:30px;font-weight:600;letter-spacing:-.5px}
+#rg{display:flex;gap:4px;margin:10px 0}
+#rg button{background:none;border:0;padding:4px 10px;border-radius:8px;cursor:pointer;opacity:.65;transition:.2s}
+#rg button:hover{background:rgba(255,255,255,.1)}#rg .on{background:rgba(255,255,255,.18);opacity:1}
+#cw{flex:1;min-height:120px;position:relative}#cv{position:absolute;inset:0;width:100%;height:100%}
+#st{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:10px}
+#st div{background:rgba(255,255,255,.06);border-radius:10px;padding:6px 9px}#st small{display:block;color:var(--m);font-size:10px}
+#ar,#ps{display:flex;gap:6px;align-items:center;margin-top:10px;color:var(--m);font-size:12px}
+#ar input,#ps input{width:90px;padding:4px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);outline:0;user-select:text}
+#ar button,#ps button{padding:4px 10px;border-radius:8px;border:0;background:color-mix(in srgb,var(--a) 40%,transparent);cursor:pointer}
+#ft{display:flex;gap:14px;align-items:center;padding:6px 16px 8px;color:var(--m);font-size:11px}
+#ft select{background:rgba(255,255,255,.08);border:0;border-radius:6px;padding:1px 4px}#ft select option{color:#000}
+body{font-variant-numeric:tabular-nums}
+#tl{display:flex;gap:4px}#tl button,#ft button{background:none;border:0;padding:4px 9px;border-radius:8px;cursor:pointer;opacity:.65;transition:.2s}
+#tl button:hover,#ft button:hover{background:rgba(255,255,255,.1);opacity:1}#tl .on{background:color-mix(in srgb,var(--a) 40%,transparent);opacity:1}
+#nw{position:absolute;inset:0;overflow:auto;display:none}#nw.on{display:block}#nw+*{}.cv-off #cv{visibility:hidden}
+.ni{padding:9px 10px;border-radius:10px;cursor:pointer;transition:.2s}.ni:hover{background:rgba(255,255,255,.09)}.ni small{color:var(--m)}
+#ps{margin-top:6px}#ps input{width:84px}#pt{margin-left:6px}
+#ft{flex-wrap:wrap;gap:8px 14px}#ac{width:22px;height:20px;border:0;padding:0;background:none;cursor:pointer}
+</style></head><body>
+<div id="tb"><span class="logo">◆ Glass Ticker</span>
+<div id="sw"><input id="q" placeholder="Search company or symbol  (Ctrl+K)" autocomplete="off"><div id="dd" class="glass"></div></div>
+<div class="sp"></div>
+<button class="ib" id="so" title="Sort: custom">⇅</button><input id="op" type="range" min="45" max="100" value="100" title="Opacity">
+<button class="ib" id="pin" title="Always on top">📌</button><button class="ib" id="mn">−</button><button class="ib" id="cl">✕</button></div>
+<div id="main"><div id="list" class="glass"></div><div id="sp" title="Drag to resize, double click to hide chart"></div>
+<div id="det" class="glass"><div id="hd"><div><div id="nm">&nbsp;</div><div id="px">...</div></div><div id="chg" style="font-size:15px;text-align:right"></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div id="rg" style="margin:10px 0"></div><div id="tl"><button id="ty" title="Candles / area">Candles</button><button id="sm" title="20-period moving average">SMA</button><button id="nb">News</button></div></div><div id="cw"><canvas id="cv"></canvas><div id="nw"></div></div><div id="st"></div>
+<div id="ar">Alert me at <input id="al" type="number" step="any"><button id="as">Set</button><span id="at"></span></div><div id="ps">Position <input id="pq" type="number" step="any" placeholder="qty"> @ <input id="pc" type="number" step="any" placeholder="avg cost"><button id="pv">Save</button><span id="pt"></span></div></div></div>
+<div id="ft"><span id="upd">Loading...</span><span>Refresh <select id="iv"><option value="5">5s</option><option value="10">10s</option><option value="30">30s</option><option value="60">60s</option></select></span>
+<label><input type="checkbox" id="au"> Start with Windows</label><span id="pf"></span><label><input type="checkbox" id="tr"> Close to tray</label><label>Accent <input type="color" id="ac"></label><button id="ex">Export</button><button id="im">Import</button><input type="file" id="fi" accept=".json" hidden><span>Ctrl+Shift+G show/hide</span></div>
+<script>
+const $=s=>document.querySelector(s),esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const S=Object.assign({list:['^NSEI','^BSESN','RELIANCE.NS','TCS.NS','INFY.NS','HDFCBANK.NS','AAPL','NVDA','BTC-USD'],sel:'^NSEI',range:'1D',sw:320,alerts:{},iv:10,op:100,top:false,auto:false,solo:false,type:'area',sma:false,hold:{},sort:0,acc:'#8ab4ff',tray:false},JSON.parse(localStorage.getItem('st')||'{}'));
+const save=()=>localStorage.setItem('st',JSON.stringify(S));
+const R={'1D':['1d','1m'],'5D':['5d','5m'],'1M':['1mo','30m'],'3M':['3mo','1d'],'6M':['6mo','1d'],'1Y':['1y','1d'],'5Y':['5y','1wk'],'MAX':['max','1mo']};
+const D={};let C={t:[],p:[],m:{}},hov=-1,anim=1,tm;
+const nf=(v,c)=>{if(v==null)return '-';try{return new Intl.NumberFormat(c==='INR'?'en-IN':'en-US',{style:'currency',currency:c,maximumFractionDigits:2}).format(v)}catch{return (+v).toFixed(2)}};
+const ord=()=>{const a=[...S.list],c=s=>D[s]?D[s].price/D[s].prev:-9;return S.sort==1?a.sort((x,y)=>c(y)-c(x)):S.sort==2?a.sort():a};
+const rsi=(p,n=14)=>{if(p.length<=n)return null;let g=0,l=0;for(let i=1;i<=n;i++){const d=p[i]-p[i-1];d>0?g+=d:l-=d}g/=n;l/=n;for(let i=n+1;i<p.length;i++){const d=p[i]-p[i-1];g=(g*(n-1)+Math.max(d,0))/n;l=(l*(n-1)+Math.max(-d,0))/n}return l?100-100/(1+g/l):100};
+const mkt=m=>{const r=m.currentTradingPeriod?.regular,n=Date.now()/1000;return r&&n>=r.start&&n<r.end?'● Open':'○ Closed'};
+const sma=(p,n)=>p.map((_,i)=>i<n-1?null:p.slice(i-n+1,i+1).reduce((a,b)=>a+b)/n);
+const base='https://query1.finance.yahoo.com/';
+async function q(s,r,i){const j=await api.get(`${base}v8/finance/chart/${encodeURIComponent(s)}?range=${r}&interval=${i}`);const x=j.chart.result[0],c=x.indicators.quote[0],t=[],p=[],o=[],h=[],l=[],vv=[];
+ x.timestamp.forEach((v,k)=>{if(c.close[k]!=null){t.push(v*1000);p.push(c.close[k]);o.push(c.open[k]??c.close[k]);h.push(c.high[k]??c.close[k]);l.push(c.low[k]??c.close[k]);vv.push(c.volume[k]||0)}});return{m:x.meta,t,p,o,h,l,v:vv}}
+let bad=0;async function poll(){bad=0;
+ await Promise.all(S.list.map(async s=>{try{const d=await q(s,'1d','5m'),o=D[s]?.price,n=d.m.regularMarketPrice;
+  D[s]={price:n,prev:d.m.chartPreviousClose,spark:d.p,cur:d.m.currency,name:d.m.shortName||s,flash:o==null?0:Math.sign(n-o)}}catch(e){bad++}}));
+ renderList();checkAlerts();$('#upd').textContent=bad&&bad===S.list.length?'⚠ Offline, retrying…':'Updated '+new Date().toLocaleTimeString();pf();const d=D[S.sel];d&&api.win('tip',S.sel+'  '+nf(d.price,d.cur))}
+function spark(a,up){if(!a||a.length<2)return '<svg></svg>';const lo=Math.min(...a),hi=Math.max(...a),n=a.length;
+ return `<svg width="70" height="24"><polyline fill="none" stroke="${up?'#34d399':'#f87171'}" stroke-width="1.6" stroke-linejoin="round" points="${a.map((v,i)=>(i/(n-1)*70).toFixed(1)+','+(22-(v-lo)/((hi-lo)||1)*20).toFixed(1)).join(' ')}"/></svg>`}
+function renderList(){const l=$('#list'),top=l.scrollTop;
+ l.innerHTML=ord().map(s=>{const d=D[s],sh=esc(s.replace(/\.(NS|BO)$/,''));if(!d)return `<div class="row" data-s="${esc(s)}"><div><b>${sh}</b><div class="sub">loading...</div></div></div>`;
+  const ch=d.price-d.prev,pc=ch/d.prev*100,up=ch>=0;
+  return `<div class="row ${s===S.sel?'sel':''} ${d.flash>0?'fu':d.flash<0?'fd':''}" data-s="${esc(s)}"><div><b>${sh}</b><div class="sub">${esc(d.name)}</div></div>${spark(d.spark,up)}<div class="pr"><b>${nf(d.price,d.cur)}</b><div class="${up?'up':'dn'}">${up?'▲':'▼'} ${Math.abs(pc).toFixed(2)}%</div></div><span class="x" data-x="${esc(s)}">✕</span></div>`}).join('');
+ Object.values(D).forEach(d=>d.flash=0);l.scrollTop=top}
+$('#list').onclick=e=>{const x=e.target.dataset.x;if(x){S.list=S.list.filter(v=>v!==x);if(S.sel===x)S.sel=S.list[0];save();renderList();loadDetail(true);return}
+ const r=e.target.closest('.row');if(r)pick(r.dataset.s)};
+function pick(s){S.sel=s;save();renderList();loadDetail(true)}
+const fmtT=t=>new Date(t).toLocaleString([],S.range==='1D'?{hour:'2-digit',minute:'2-digit'}:S.range==='5D'||S.range==='1M'?{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}:{month:'short',day:'numeric',year:'2-digit'});
+async function loadDetail(an){const s=S.sel;if(!s)return;try{const d=await q(s,...R[S.range]);if(s!==S.sel)return;C=d;const m=d.m,p=d.p,cur=m.currency;
+ const ref=S.range==='1D'?m.chartPreviousClose:p[0],pr=m.regularMarketPrice,ch=pr-ref,up=ch>=0;
+ $('#nm').textContent=(m.longName||m.shortName||s)+'  ·  '+(m.fullExchangeName||'')+'  ·  '+mkt(m);$('#px').textContent=nf(pr,cur);
+ $('#chg').innerHTML=`<span class="${up?'up':'dn'}">${up?'▲':'▼'} ${nf(Math.abs(ch),cur)} (${(ch/ref*100).toFixed(2)}%)</span>`;
+ const st=[['Day high',m.regularMarketDayHigh],['Day low',m.regularMarketDayLow],['52W high',m.fiftyTwoWeekHigh],['52W low',m.fiftyTwoWeekLow],['Prev close',m.chartPreviousClose]];
+ $('#st').innerHTML=st.map(([k,v])=>`<div><small>${k}</small>${nf(v,cur)}</div>`).join('')+`<div><small>Volume</small>${m.regularMarketVolume?.toLocaleString()||'-'}</div><div><small>RSI (14)</small>${rsi(p)?.toFixed(1)||'-'}</div><div><small>Range ${S.range}</small>${nf(Math.min(...d.l),cur)} – ${nf(Math.max(...d.h),cur)}</div>`;
+ showAlert();showPos();news();an?run():draw()}catch(e){}}
+$('#rg').innerHTML=Object.keys(R).map(k=>`<button>${k}</button>`).join('');
+function mark(){[...$('#rg').children].forEach(b=>b.classList.toggle('on',b.textContent===S.range))}mark();
+$('#rg').onclick=e=>{if(e.target.tagName==='BUTTON'){S.range=e.target.textContent;save();mark();loadDetail(true)}};
+function run(){const t0=performance.now();anim=0;(function f(n){anim=Math.min(1,(n-t0)/650);draw();if(anim<1)requestAnimationFrame(f)})(t0)}
+const PAD={l:8,r:70,t:12,b:22};
+function geo(w,h){const a=C.h||C.p,b=C.l||C.p;let hi=Math.max(...a),lo=Math.min(...b);const sp=(hi-lo)||1;lo-=sp*.1;hi+=sp*.1;const n=C.p.length,ch=h-PAD.t-PAD.b,vh=ch*.16;
+ return{lo,hi,vh,bw:(w-PAD.l-PAD.r)/n,X:i=>PAD.l+(w-PAD.l-PAD.r)*(i+.5)/n,Y:v=>PAD.t+(ch-vh)*(1-(v-lo)/(hi-lo))}}
+function draw(){const cv=$('#cv'),dpr=devicePixelRatio,w=cv.clientWidth,h=cv.clientHeight;cv.width=w*dpr;cv.height=h*dpr;
+ const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);const p=C.p;if(p.length<2)return;
+ const {lo,hi,X,Y,vh,bw}=geo(w,h),n=p.length,ref=S.range==='1D'?C.m.chartPreviousClose:p[0],up=p[n-1]>=ref,col=up?'52,211,153':'248,113,113',cd=S.type==='candle',bot=h-PAD.b,cur=C.m.currency;
+ x.font='11px Segoe UI';x.lineWidth=1;
+ for(let k=0;k<5;k++){const v=lo+(hi-lo)*k/4,y=Y(v);x.strokeStyle='rgba(255,255,255,.07)';x.beginPath();x.moveTo(PAD.l,y);x.lineTo(w-PAD.r,y);x.stroke();x.fillStyle='rgba(255,255,255,.5)';x.fillText(v.toFixed(2),w-PAD.r+6,y+4)}
+ for(let k=0;k<4;k++){const i=Math.round((n-1)*k/3);x.fillStyle='rgba(255,255,255,.45)';x.textAlign=k==3?'right':k?'center':'left';x.fillText(fmtT(C.t[i]),X(i),h-6)}x.textAlign='left';
+ x.save();x.beginPath();x.rect(0,0,PAD.l+(w-PAD.l-PAD.r)*anim+1,h);x.clip();
+ const mv=Math.max(...C.v,1);C.v.forEach((v,i)=>{x.fillStyle=p[i]>=C.o[i]?'rgba(52,211,153,.22)':'rgba(248,113,113,.22)';const b=v/mv*vh;x.fillRect(X(i)-bw*.35,bot-b,Math.max(1,bw*.7),b)});
+ if(cd){C.p.forEach((c,i)=>{const u=c>=C.o[i];x.strokeStyle=x.fillStyle=u?'#34d399':'#f87171';x.beginPath();x.moveTo(X(i),Y(C.h[i]));x.lineTo(X(i),Y(C.l[i]));x.stroke();const t=Y(Math.max(c,C.o[i]));x.fillRect(X(i)-bw*.32,t,Math.max(1,bw*.64),Math.max(1,Y(Math.min(c,C.o[i]))-t))})}
+ else{x.beginPath();p.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.strokeStyle=`rgb(${col})`;x.lineWidth=2;x.lineJoin='round';x.shadowColor=`rgba(${col},.6)`;x.shadowBlur=10;x.stroke();x.shadowBlur=0;
+  x.lineTo(X(n-1),bot);x.lineTo(X(0),bot);const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,`rgba(${col},.35)`);g.addColorStop(1,`rgba(${col},0)`);x.fillStyle=g;x.fill()}
+ if(S.sma){const m=sma(p,Math.min(20,n>>1||1));x.beginPath();let f=1;m.forEach((v,i)=>{if(v==null)return;f?x.moveTo(X(i),Y(v)):x.lineTo(X(i),Y(v));f=0});x.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--a');x.lineWidth=1.5;x.stroke()}
+ x.restore();
+ if(S.range==='1D'&&ref>lo&&ref<hi){x.strokeStyle='rgba(255,255,255,.3)';x.setLineDash([2,5]);x.beginPath();x.moveTo(PAD.l,Y(ref));x.lineTo(w-PAD.r,Y(ref));x.stroke();x.setLineDash([])}
+ if(hov>=0&&hov<n){const px=X(hov),py=Y(p[hov]);x.strokeStyle='rgba(255,255,255,.35)';x.setLineDash([4,4]);x.beginPath();x.moveTo(px,PAD.t);x.lineTo(px,bot);x.stroke();x.setLineDash([]);
+  x.fillStyle=`rgb(${col})`;x.beginPath();x.arc(px,py,4.5,0,7);x.fill();const f=v=>nf(v,cur),
+  tx=(cd?`O ${f(C.o[hov])}  H ${f(C.h[hov])}  L ${f(C.l[hov])}  C ${f(p[hov])}`:f(p[hov]))+'   '+fmtT(C.t[hov]),tw=x.measureText(tx).width+18,bx=Math.min(Math.max(px-tw/2,PAD.l),w-PAD.r-tw);
+  x.fillStyle='rgba(20,26,44,.9)';x.beginPath();x.roundRect(bx,PAD.t,tw,24,8);x.fill();x.fillStyle='#fff';x.fillText(tx,bx+9,PAD.t+16)}}
+$('#cv').onmousemove=e=>{const w=$('#cv').clientWidth,n=C.p.length;if(n<2)return;hov=Math.max(0,Math.min(n-1,Math.floor((e.offsetX-PAD.l)/(w-PAD.l-PAD.r)*n)));draw()};
+$('#cv').onmouseleave=()=>{hov=-1;draw()};new ResizeObserver(draw).observe($('#cw'));
+function showAlert(){const a=S.alerts[S.sel];$('#at').textContent=a?`Active: ${a.dir>0?'rises to':'falls to'} ${a.px}`:''}
+$('#as').onclick=()=>{const v=parseFloat($('#al').value),d=D[S.sel];if(!v||!d)return;S.alerts[S.sel]={px:v,dir:v>d.price?1:-1};save();$('#al').value='';showAlert()};
+function checkAlerts(){for(const s in S.alerts){const a=S.alerts[s],d=D[s];if(d&&(a.dir>0?d.price>=a.px:d.price<=a.px)){new Notification('Price alert: '+s,{body:`${s} is at ${nf(d.price,d.cur)} (target ${a.px})`});delete S.alerts[s];save();showAlert()}}}
+let sd;const dd=$('#dd');
+$('#q').oninput=e=>{clearTimeout(sd);const v=e.target.value.trim();if(!v){dd.style.display='none';return}
+ sd=setTimeout(async()=>{try{const j=await api.get(`${base}v1/finance/search?q=${encodeURIComponent(v)}&quotesCount=8&newsCount=0`);
+  const r=(j.quotes||[]).filter(x=>x.symbol);dd.innerHTML=r.map((x,i)=>`<div class="${i?'':'on'}" data-s="${esc(x.symbol)}"><span><b>${esc(x.symbol)}</b> ${esc(x.shortname||x.longname||'')}</span><span style="opacity:.5">${esc(x.exchDisp||'')}</span></div>`).join('')||'<div>No results</div>';dd.style.display='block'}catch(e){}},250)};
+dd.onmousedown=e=>{const r=e.target.closest('[data-s]');if(r)add(r.dataset.s)};
+$('#q').onkeydown=e=>{if(e.key==='Enter'){const f=dd.querySelector('[data-s]');if(f)add(f.dataset.s)}if(e.key==='Escape'){dd.style.display='none';e.target.blur()}};
+$('#q').onblur=()=>setTimeout(()=>dd.style.display='none',150);
+async function add(s){if(!S.list.includes(s))S.list.unshift(s);S.sel=s;save();$('#q').value='';dd.style.display='none';await poll();loadDetail(true)}
+addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='k'){e.preventDefault();$('#q').focus();$('#q').select()}
+ if(document.activeElement.tagName==='INPUT')return;const L=ord(),i=L.indexOf(S.sel);if(e.key==='ArrowDown'&&i<L.length-1)pick(L[i+1]);if(e.key==='ArrowUp'&&i>0)pick(L[i-1])});
+let PS='',nv=false,NW={s:''};
+const sgn=(v,c)=>(v>=0?'+':'−')+nf(Math.abs(v),c);
+function showPos(){const h=S.hold[S.sel],d=D[S.sel];if(PS!==S.sel){PS=S.sel;$('#pq').value=h?h.q:'';$('#pc').value=h?h.c:''}
+ $('#pt').innerHTML=h&&d?(()=>{const pl=h.q*(d.price-h.c);return `${nf(h.q*d.price,d.cur)} · <span class="${pl>=0?'up':'dn'}">${sgn(pl,d.cur)} (${((d.price/h.c-1)*100).toFixed(2)}%)</span>`})():''}
+$('#pv').onclick=()=>{const q=parseFloat($('#pq').value),c=parseFloat($('#pc').value);if(q>0&&c>=0)S.hold[S.sel]={q,c};else delete S.hold[S.sel];save();showPos();pf()};
+function pf(){const T={};for(const s in S.hold){const d=D[s],h=S.hold[s];if(!d||!S.list.includes(s))continue;const t=T[d.cur]||(T[d.cur]={v:0,day:0,pl:0});t.v+=h.q*d.price;t.day+=h.q*(d.price-d.prev);t.pl+=h.q*(d.price-h.c)}
+ $('#pf').innerHTML=Object.entries(T).map(([c,t])=>`Portfolio ${nf(t.v,c)} · day <span class="${t.day>=0?'up':'dn'}">${sgn(t.day,c)}</span> · P&amp;L <span class="${t.pl>=0?'up':'dn'}">${sgn(t.pl,c)}</span>`).join(' | ')}
+async function news(){if(!nv||NW.s===S.sel)return;NW.s=S.sel;const el=$('#nw');el.innerHTML='<div class="ni">Loading…</div>';try{const j=await api.get(`${base}v1/finance/search?q=${encodeURIComponent(S.sel)}&quotesCount=0&newsCount=10`);if(NW.s!==S.sel)return;
+ el.innerHTML=(j.news||[]).map(n=>`<div class="ni" data-u="${esc(n.link)}">${esc(n.title)}<br><small>${esc(n.publisher||'')} · ${new Date(n.providerPublishTime*1000).toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</small></div>`).join('')||'<div class="ni">No news found</div>'}catch{el.innerHTML='<div class="ni">Could not load news</div>';NW.s=''}}
+$('#nw').onclick=e=>{const n=e.target.closest('[data-u]');n&&api.open(n.dataset.u)};
+function initUI(){const m=()=>{$('#ty').classList.toggle('on',S.type==='candle');$('#sm').classList.toggle('on',S.sma);$('#nb').classList.toggle('on',nv);$('#nw').classList.toggle('on',nv);$('#cw').classList.toggle('cv-off',nv);$('#so').title='Sort: '+['custom','% change','name'][S.sort]};
+ $('#ty').onclick=()=>{S.type=S.type==='candle'?'area':'candle';save();m();draw()};$('#sm').onclick=()=>{S.sma=!S.sma;save();m();draw()};
+ $('#nb').onclick=()=>{nv=!nv;NW.s='';m();news()};$('#so').onclick=()=>{S.sort=(S.sort+1)%3;save();m();renderList()};m();
+ const ac=$('#ac');ac.value=S.acc;document.documentElement.style.setProperty('--a',S.acc);ac.oninput=()=>{S.acc=ac.value;document.documentElement.style.setProperty('--a',S.acc);save();draw()};
+ $('#tr').checked=S.tray;api.win('tray',S.tray);$('#tr').onchange=e=>{S.tray=e.target.checked;api.win('tray',S.tray);save()};
+ $('#ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({list:S.list,hold:S.hold,alerts:S.alerts},null,1)],{type:'application/json'}));a.download='glass-ticker-backup.json';a.click()};
+ $('#im').onclick=()=>$('#fi').click();
+ $('#fi').onchange=async e=>{try{const j=JSON.parse(await e.target.files[0].text()),ok=v=>typeof v==='string'&&/^[\w.^=\-]{1,20}$/.test(v);
+  if(Array.isArray(j.list))S.list=[...new Set(j.list.filter(ok))];S.sel=S.list[0];
+  for(const k in j.hold||{})if(ok(k)&&j.hold[k].q>0&&j.hold[k].c>=0)S.hold[k]={q:+j.hold[k].q,c:+j.hold[k].c};
+  for(const k in j.alerts||{})if(ok(k)&&isFinite(j.alerts[k].px))S.alerts[k]={px:+j.alerts[k].px,dir:j.alerts[k].dir>0?1:-1};
+  save();await poll();loadDetail(true)}catch{$('#upd').textContent='⚠ Invalid backup file'}e.target.value=''}}
+const sp=$('#sp');sp.onmousedown=e=>{sp.classList.add('d');const mv=ev=>{S.sw=Math.max(210,Math.min(innerWidth-300,ev.clientX-10));document.documentElement.style.setProperty('--sw',S.sw+'px')};
+ const up=()=>{sp.classList.remove('d');removeEventListener('mousemove',mv);removeEventListener('mouseup',up);save();draw()};addEventListener('mousemove',mv);addEventListener('mouseup',up)};
+sp.ondblclick=()=>{S.solo=!S.solo;document.body.classList.toggle('solo',S.solo);save();draw()};
+$('#list').ondblclick=()=>{if(S.solo){S.solo=false;document.body.classList.remove('solo');save();draw()}};
+$('#mn').onclick=()=>api.win('min');$('#cl').onclick=()=>api.win('close');
+$('#pin').onclick=()=>{S.top=!S.top;$('#pin').classList.toggle('on',S.top);api.win('top',S.top);save()};
+$('#op').oninput=e=>{S.op=+e.target.value;api.win('op',S.op/100);save()};
+$('#au').onchange=e=>{S.auto=e.target.checked;api.win('auto',S.auto);save()};
+$('#iv').onchange=e=>{S.iv=+e.target.value;save();sched()};
+let sk=0;function tick(){if(document.hidden&&++sk%6)return;poll();loadDetail(false)}function sched(){clearInterval(tm);tm=setInterval(tick,S.iv*1000)}
+document.documentElement.style.setProperty('--sw',S.sw+'px');document.body.classList.toggle('solo',S.solo);
+$('#pin').classList.toggle('on',S.top);api.win('top',S.top);$('#op').value=S.op;api.win('op',S.op/100);$('#au').checked=S.auto;$('#iv').value=S.iv;
+initUI();renderList();poll().then(()=>loadDetail(true));sched();
+</script></body></html>

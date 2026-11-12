@@ -1,0 +1,41 @@
+{
+  "name": "glass-ticker",
+  "version": "2.0.0",
+  "description": "Glass Ticker - a frameless acrylic desktop market ticker for Windows",
+  "author": "Shounak",
+  "license": "MIT",
+  "homepage": "https://github.com/shounakjoshi88-a11y/glass-ticker",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shounakjoshi88-a11y/glass-ticker.git"
+  },
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable --x64"
+  },
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.shounak.glassticker",
+    "productName": "GlassTicker",
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "icon.png"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": true
+    },
+    "portable": {
+      "artifactName": "GlassTicker.exe"
+    }
+  }
+}
