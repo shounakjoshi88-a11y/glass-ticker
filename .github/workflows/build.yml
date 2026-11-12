@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v7
         with: { node-version: 20, cache: npm }
       - run: npm ci
-      # Builds on Windows so rcdit can embed build/icon.ico into the exe.
+      # Builds on Windows so rcedit can embed build/icon.ico into the exe.
       # Building on Linux skips that step and ships a generic icon.
       - run: npm run dist
       - name: Compute release metadata
@@ -25,7 +25,9 @@ jobs:
           $exe = "dist/GlassTicker.exe"
           $hash = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLower()
           $size = (Get-Item $exe).Length
-          $version = (Get-Content package.json | ConvertFrom-Json).version
+          $tag = "${{ github.ref_name }}"
+          if ($tag -like "v*") { $version = $tag.TrimStart("v") }
+          else { $version = (Get-Content package.json | ConvertFrom-Json).version }
           $meta = [ordered]@{
             version = $version
             asset = "GlassTicker.exe"
@@ -35,13 +37,15 @@ jobs:
             url = "https://github.com/shounakjoshi88-a11y/glass-ticker/releases/latest/download/GlassTicker.exe"
           }
           $meta | ConvertTo-Json | Set-Content -Path "dist/release.json" -Encoding utf8
-          Write-Output "sha256=$hash size=$size"
+          "$hash  GlassTicker.exe" | Set-Content -Path "dist/GlassTicker.exe.sha256" -Encoding ascii
+          Write-Output "version=$version sha256=$hash size=$size"
       - uses: actions/upload-artifact@v7
         with:
           name: GlassTicker
           path: |
             dist/GlassTicker.exe
             dist/release.json
+            dist/GlassTicker.exe.sha256
           if-no-files-found: error
       - name: Attach to release
         if: startsWith(github.ref, 'refs/tags/v')
@@ -50,5 +54,6 @@ jobs:
           files: |
             dist/GlassTicker.exe
             dist/release.json
+            dist/GlassTicker.exe.sha256
           draft: false
           generate_release_notes: true
