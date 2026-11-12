@@ -95,6 +95,10 @@ jobs:
     name: Publish to npmjs, PyPI and Maven Central
     runs-on: ubuntu-latest
     needs: github-packages
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
     # Each step only runs when the matching secret has been added to the
     # repository, so this job is safe to enable before the accounts exist.
     steps:
@@ -116,19 +120,19 @@ jobs:
           cache: maven
 
       - name: Publish to npmjs
-        if: ${{ secrets.NPM_TOKEN != '' }}
+        if: env.NPM_TOKEN != ''
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
         run: |
           set -euo pipefail
           cd packages/npm/glass-ticker
           npm publish --registry https://registry.npmjs.org --access public
 
       - name: Publish to PyPI
-        if: ${{ secrets.PYPI_PASSWORD != '' }}
+        if: env.PYPI_PASSWORD != ''
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          TWINE_PASSWORD: ${{ env.PYPI_PASSWORD }}
         run: |
           set -euo pipefail
           python -m pip install --upgrade build twine
@@ -137,9 +141,9 @@ jobs:
           twine upload --non-interactive dist-python/*
 
       - name: Publish to Maven Central
-        if: ${{ secrets.CENTRAL_TOKEN != '' }}
+        if: env.CENTRAL_TOKEN != ''
         env:
-          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
+          CENTRAL_TOKEN: ${{ env.CENTRAL_TOKEN }}
         run: |
           set -euo pipefail
           cat > settings.xml <<EOF
