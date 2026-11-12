@@ -84,19 +84,29 @@ jobs:
       - name: Make the packages public
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PACKAGES_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
           OWNER: ${{ github.repository_owner }}
         run: |
           set -uo pipefail
-          # GitHub Packages defaults to private - flip both to public so
-          # anyone can install them without a token. The API hands back the
-          # exact resource URL, so there is no name format to guess.
+          # GitHub Packages defaults to private. Flipping the visibility
+          # needs a personal access token with the write:packages scope -
+          # the built-in GITHUB_TOKEN is not allowed to change it. Set the
+          # PACKAGES_TOKEN secret to automate it, otherwise it is a two
+          # click job in the repository's Packages tab.
           for type in npm maven; do
             gh api --paginate "/users/${OWNER}/packages?package_type=${type}" \
-              --jq '.[] | "(.package_type)\t(.name)\t(.visibility)\t(.url)"' || true
+              --jq '.[] | "(.package_type)\t(.name)\t(.visibility)"' || true
+          done
+          if [ -z "${PACKAGES_TOKEN}" ]; then
+            echo "::notice::PACKAGES_TOKEN is not set, so the packages stay private."
+            echo "::notice::Repository > Packages > package > Change visibility > Public."
+            exit 0
+          fi
+          for type in npm maven; do
             gh api --paginate "/users/${OWNER}/packages?package_type=${type}" \
               --jq '.[].url' | while read -r url; do
                 echo "patching ${url}"
-                gh api --method PATCH "${url}" -f visibility=public \
+                GH_TOKEN="${PACKAGES_TOKEN}" gh api --method PATCH "${url}" -f visibility=public \
                   --jq '"now: " + .visibility' || echo "could not change ${url}"
               done
           done
