@@ -1,0 +1,46 @@
+{
+  "name": "@glass-ticker/react",
+  "version": "2.5.0",
+  "description": "Glass Ticker as a React component",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node build.mjs && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "glass-ticker",
+    "react",
+    "stocks",
+    "ticker",
+    "chart",
+    "component"
+  ],
+  "license": "MIT",
+  "author": "Shounak",
+  "dependencies": {
+    "@glass-ticker/core": "^2.5.0"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "esbuild": "^0.25.0",
+    "react": "^19.0.0",
+    "typescript": "^5.7.0"
+  }
+}

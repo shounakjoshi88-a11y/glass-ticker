@@ -69,6 +69,40 @@ npm install @shounakjoshi88-a11y/glass-ticker --registry=https://npm.pkg.github.
 All the language wrappers fetch `release.json` first and verify the download
 against that hash - a mismatched file is deleted instead of executed.
 
+## Use it as a plugin in your own app
+
+The ticker UI is also a **standalone web component**, so you can drop it into
+any application - not just use the desktop app.
+
+```html
+<script type="module" src="https://unpkg.com/@glass-ticker/core/dist/glass-ticker.js"></script>
+<glass-ticker symbols="NVDA,AAPL,TSLA" symbol="NVDA" endpoint="/api"></glass-ticker>
+```
+
+| Stack | Package | Install |
+| --- | --- | --- |
+| Any web app | `@glass-ticker/core` | `npm i @glass-ticker/core` |
+| React | `@glass-ticker/react` | `npm i @glass-ticker/react` |
+| Vue | `@glass-ticker/vue` | `npm i @glass-ticker/vue` |
+| Node backend | `@glass-ticker/server` | `npm i @glass-ticker/server` |
+| Python | `glass-ticker` | `pip install glass-ticker` |
+| Java / Spring | `com.github.shounakjoshi88:glass-ticker-launcher` | Maven Central |
+
+A browser cannot call Yahoo directly (CORS), so the component reads from a
+tiny data API. Every binding ships the same three endpoints:
+
+```
+GET /api/quotes?symbols=NVDA,AAPL
+GET /api/chart?symbol=NVDA&range=1D
+GET /api/search?q=tesla
+```
+
+Start it with `npx glass-ticker-server`, `glass-ticker serve`, or
+`java -jar glass-ticker-launcher.jar` - or point `endpoint` at your own
+backend. Full usage for every stack is in
+[`packages/core/README.md`](packages/core/README.md), and a live demo is in
+[`demo/`](demo/).
+
 ## What it does
 
 - **Carbon theme** - flat graphite surfaces with a single accent colour
@@ -109,12 +143,17 @@ so treat the number as an indication rather than a tick.
 ```
 index.html, main.js, preload.js     the app
 icon.png, build/icon.ico            icons
-pom.xml, src/                       Maven launcher module
+pom.xml, src/                       Maven launcher + embeddable data server
 packaging/winget/                   winget-pkgs manifest (submitted upstream)
 packaging/scoop/                    scoop bucket (published as its own repo)
-packages/npm/glass-ticker/          npm wrapper package
-packages/python/                    PyPI wrapper package
+packages/core/                      the embeddable web component
+packages/react/                     React wrapper
+packages/vue/                       Vue wrapper
+packages/server/                    reference data API for Node
+packages/npm/glass-ticker/          npm wrapper for the desktop app
+packages/python/                    PyPI wrapper + embeddable data server
 tools/check-exe-icon.ps1            verifies the icon is embedded in a built exe
+demo/                               live demo for the component
 ```
 
 ## Build from source

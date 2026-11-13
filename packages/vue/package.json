@@ -1,0 +1,45 @@
+{
+  "name": "@glass-ticker/vue",
+  "version": "2.5.0",
+  "description": "Glass Ticker as a Vue 3 component",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node build.mjs && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "glass-ticker",
+    "vue",
+    "stocks",
+    "ticker",
+    "chart",
+    "component"
+  ],
+  "license": "MIT",
+  "author": "Shounak",
+  "dependencies": {
+    "@glass-ticker/core": "^2.5.0"
+  },
+  "peerDependencies": {
+    "vue": ">=3.3"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.0",
+    "vue": "^3.5.0"
+  }
+}

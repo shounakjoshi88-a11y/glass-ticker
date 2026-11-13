@@ -1,8 +1,7 @@
 node_modules/
-dist/
-out/
-target/
-build/
+/dist/
+/out/
+/target/
 *.egg-info/
 *.log
 npm-debug.log*

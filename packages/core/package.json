@@ -1,0 +1,53 @@
+{
+  "name": "@glass-ticker/core",
+  "version": "2.5.0",
+  "description": "Glass Ticker as an embeddable web component - works in any framework",
+  "type": "module",
+  "main": "./dist/glass-ticker.js",
+  "module": "./dist/glass-ticker.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/glass-ticker.js",
+      "default": "./dist/glass-ticker.js"
+    },
+    "./style.css": "./dist/glass-ticker.css",
+    "./element": "./dist/glass-ticker.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "node build.mjs && tsc -p tsconfig.build.json",
+    "watch": "node build.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "glass-ticker",
+    "stock",
+    "ticker",
+    "web-component",
+    "custom-element",
+    "chart",
+    "quotes",
+    "market",
+    "finance"
+  ],
+  "license": "MIT",
+  "author": "Shounak",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shounakjoshi88-a11y/glass-ticker.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/shounakjoshi88-a11y/glass-ticker#readme",
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.0"
+  }
+}

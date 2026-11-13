@@ -1,0 +1,35 @@
+{
+  "name": "@glass-ticker/server",
+  "version": "2.5.0",
+  "description": "Reference data API for the Glass Ticker web component",
+  "type": "module",
+  "main": "./server.mjs",
+  "exports": {
+    ".": "./server.mjs"
+  },
+  "bin": {
+    "glass-ticker-server": "./bin/serve.mjs"
+  },
+  "files": [
+    "server.mjs",
+    "bin"
+  ],
+  "keywords": [
+    "glass-ticker",
+    "stocks",
+    "quotes",
+    "server",
+    "api"
+  ],
+  "license": "MIT",
+  "author": "Shounak",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shounakjoshi88-a11y/glass-ticker.git",
+    "directory": "packages/server"
+  },
+  "homepage": "https://github.com/shounakjoshi88-a11y/glass-ticker#readme",
+  "scripts": {
+    "start": "node bin/serve.mjs"
+  }
+}

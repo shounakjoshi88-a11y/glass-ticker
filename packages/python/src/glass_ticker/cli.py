@@ -8,6 +8,7 @@ import sys
 
 from . import __version__
 from .installer import ensure_installed, executable_path, install_dir
+from .server import TickerServer
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -19,13 +20,24 @@ def build_parser() -> argparse.ArgumentParser:
         "command",
         nargs="?",
         default="launch",
-        choices=["launch", "install", "path", "version"],
+        choices=["launch", "install", "path", "version", "serve"],
         help="what to do (default: launch)",
     )
     parser.add_argument(
         "--quiet",
         action="store_true",
         help="do not print progress messages",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8787,
+        help="port for the embeddable data server",
+    )
+    parser.add_argument(
+        "--symbols",
+        default="NVDA,AAPL,MSFT,TSLA",
+        help="comma separated symbols for the server page",
     )
     return parser
 
@@ -38,6 +50,19 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "path":
         print(executable_path())
+        return 0
+    if args.command == "serve":
+        server = TickerServer(port=args.port, symbols=args.symbols)
+        server.start()
+        print(f"Glass Ticker data API on {server.url}")
+        print(f"Embed with: {server.url}")
+        try:
+            while True:
+                import time
+
+                time.sleep(3600)
+        except KeyboardInterrupt:
+            server.stop()
         return 0
     if args.command == "install":
         try:
