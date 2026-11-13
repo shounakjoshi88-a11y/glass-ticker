@@ -1,9 +1,16 @@
 package com.shounak.glassticker
 
+import android.Manifest
+import android.app.Activity
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +29,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -37,6 +46,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,9 +63,13 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -91,18 +105,32 @@ private val defaultSymbols = listOf(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GlassTickerApp() {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
     var symbols by remember { mutableStateOf(defaultSymbols) }
     var quotes by remember { mutableStateOf<List<Quote>>(emptyList()) }
     var loading by remember { mutableStateOf(false) }
+    var refreshing by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf<String?>(null) }
     var searching by remember { mutableStateOf(false) }
     var query by remember { mutableStateOf("") }
     var results by remember { mutableStateOf<List<SearchHit>>(emptyList()) }
     var selected by remember { mutableStateOf<Quote?>(null) }
-    val scope = rememberCoroutineScope()
+    var liveOn by remember { mutableStateOf(false) }
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            liveOn = true
+            TickerService.start(context, symbols)
+        }
+    }
 
     suspend fun refresh() {
-        loading = true
+        loading = quotes.isEmpty()
+        refreshing = true
         try {
             quotes = Api.quotes(symbols)
             message = null
@@ -110,6 +138,7 @@ fun GlassTickerApp() {
             message = error.message ?: "Could not load quotes"
         }
         loading = false
+        refreshing = false
     }
 
     LaunchedEffect(Unit) { refresh() }
@@ -181,6 +210,26 @@ fun GlassTickerApp() {
                 },
                 actions = {
                     if (!searching) {
+                        IconButton(onClick = {
+                            if (liveOn) {
+                                liveOn = false
+                                TickerService.stop(context)
+                            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
+                                != PackageManager.PERMISSION_GRANTED
+                            ) {
+                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            } else {
+                                liveOn = true
+                                TickerService.start(context, symbols)
+                            }
+                        }) {
+                            Icon(
+                                if (liveOn) Icons.Filled.Notifications else Icons.Filled.NotificationsOff,
+                                contentDescription = "Live price notification",
+                                tint = if (liveOn) Theme.accent else Theme.muted
+                            )
+                        }
                         IconButton(onClick = { searching = true }) {
                             Icon(Icons.Filled.Search, contentDescription = "Search", tint = Theme.muted)
                         }
@@ -210,6 +259,7 @@ fun GlassTickerApp() {
                                 searching = false
                                 query = ""
                                 scope.launch { refresh() }
+                                if (liveOn) TickerService.start(context, symbols)
                             }
                             .padding(10.dp)
                     ) {
@@ -224,31 +274,56 @@ fun GlassTickerApp() {
                 }
             }
         } else {
-            LazyColumn(
+            PullToRefreshBox(
+                isRefreshing = refreshing,
+                onRefresh = { scope.launch { refresh() } },
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp)
+                    .padding(padding)
             ) {
-                if (loading && quotes.isEmpty()) {
-                    item {
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(200.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = Theme.accent)
+                LazyColumn(
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp)
+                ) {
+                    if (loading && quotes.isEmpty()) {
+                        item {
+                            Box(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = Theme.accent)
+                            }
                         }
                     }
-                }
-                message?.let { note ->
-                    item {
-                        Text(note, color = Theme.muted, fontSize = 12.sp, modifier = Modifier.padding(12.dp))
+                    message?.let { note ->
+                        item {
+                            Text(note, color = Theme.muted, fontSize = 12.sp, modifier = Modifier.padding(12.dp))
+                        }
                     }
-                }
-                items(quotes) { quote ->
-                    QuoteRow(quote) { selected = quote }
+                    if (!loading && quotes.isEmpty() && message == null) {
+                        item {
+                            Box(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("No quotes. Pull to refresh.", color = Theme.muted, fontSize = 12.sp)
+                            }
+                        }
+                    }
+                    items(quotes, key = { it.symbol }) { quote ->
+                        QuoteRow(
+                            quote = quote,
+                            onClick = { selected = quote },
+                            onRemove = {
+                                symbols = symbols.filter { it != quote.symbol }
+                                quotes = quotes.filter { it.symbol != quote.symbol }
+                                if (liveOn) TickerService.start(context, symbols)
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -256,7 +331,7 @@ fun GlassTickerApp() {
 }
 
 @Composable
-private fun QuoteRow(quote: Quote, onClick: () -> Unit) {
+private fun QuoteRow(quote: Quote, onClick: () -> Unit, onRemove: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -265,7 +340,19 @@ private fun QuoteRow(quote: Quote, onClick: () -> Unit) {
             .clickable { onClick() }
             .padding(vertical = 10.dp, horizontal = 4.dp)
     ) {
-        Monogram(quote.symbol)
+        if (quote.logoUrl != null) {
+            AsyncImage(
+                model = quote.logoUrl,
+                contentDescription = quote.symbol,
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Theme.raised),
+                contentScale = ContentScale.Fit
+            )
+        } else {
+            Monogram(quote.symbol)
+        }
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(quote.symbol, color = Theme.text, fontWeight = FontWeight.SemiBold)
@@ -289,6 +376,14 @@ private fun QuoteRow(quote: Quote, onClick: () -> Unit) {
                 fontWeight = FontWeight.SemiBold
             )
         }
+        Spacer(Modifier.width(8.dp))
+        IconButton(onClick = onRemove) {
+            Icon(
+                Icons.Filled.NotificationsOff, // reuse as "remove" affordance placeholder
+                contentDescription = "Remove",
+                tint = Theme.dim
+            )
+        }
     }
 }
 
@@ -310,6 +405,7 @@ private fun Monogram(symbol: String) {
     }
 }
 
+// ... DetailScreen, GlassPanel, PriceChart, Format unchanged (kept below)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DetailScreen(quote: Quote, onBack: () -> Unit) {
