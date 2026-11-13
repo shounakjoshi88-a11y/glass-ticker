@@ -13,6 +13,7 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --win portable --x64",
+    "dist:win": "electron-builder --win portable --x64",
     "dist:mac": "electron-builder --mac dmg zip",
     "dist:linux": "electron-builder --linux AppImage deb"
   },
