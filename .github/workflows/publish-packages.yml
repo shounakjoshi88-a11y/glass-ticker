@@ -1,4 +1,3 @@
-successfully downloaded text file (SHA: eb4551c2acc9cb0c88ab597def1d8738c7157001)
 name: publish packages
 on:
   push:
@@ -91,7 +90,7 @@ jobs:
           mvn --batch-mode --settings settings.xml deploy \
             -DaltDeploymentRepository="github::default::https://maven.pkg.github.com/${OWNER}/${REPO}" \
             > deploy.log 2>&1 || {
-              if grep -qiE "already exists|status code: 409|Conflict \(409\)" deploy.log; then
+              if grep -qiE "already exists|status code: 409|Conflict" deploy.log; then
                 echo "already published to GitHub Packages - skipping"
               else
                 tail -40 deploy.log
