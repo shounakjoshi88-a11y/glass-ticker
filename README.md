@@ -77,6 +77,7 @@ against that hash - a mismatched file is deleted instead of executed.
 | **macOS** | `.dmg` and `.zip` | download and drag to Applications |
 | **Linux** | `.AppImage` and `.deb` | `chmod +x *.AppImage && ./GlassTicker*.AppImage`, or `sudo dpkg -i *.deb` |
 | **iOS / iPadOS** | native SwiftUI `.app` | `GlassTicker-ios.app.zip` from the release - sideload it, or build it yourself |
+| **Android** | native Kotlin APK | `GlassTicker-android.apk` from the release - sideload it, or install it directly |
 
 The window chrome adapts to the platform: the Windows acrylic backdrop on
 Windows 11, the macOS vibrancy material on macOS, and a transparent window
@@ -105,9 +106,22 @@ Developer certificate (add `APPLE_CERTIFICATE_P12_BASE64`,
 will produce a signed `.ipa`), or sideload the unsigned app with AltStore or
 Sideloadly.
 
-Android is not built yet, but the **component** works there unchanged - it
-is plain HTML - so point a `WebView` (or a Capacitor or Cordova shell) at
-the data API and drop the `<glass-ticker>` tag in.
+### Android
+
+Also a **native Kotlin app** with Jetpack Compose, in [`android/`](android/):
+the watchlist, a Canvas price chart, the range picker, the statistics and
+the search. It talks to Yahoo through `HttpURLConnection`, so there is no
+CORS to work around and no server to run alongside the phone.
+
+```bash
+cd android
+./gradlew assembleRelease
+```
+
+The APK is signed with the keystore in `android/app/keystore/` - it is a
+**sideload key**, published on purpose so that rebuilds can upgrade an
+already installed app (Android refuses an update signed with a different
+key). It is not a Play Store key: for the store you need your own.
 
 ## Use it as a plugin in your own app
 
