@@ -124,7 +124,10 @@ backend. Full usage for every stack is in
 
 - **Carbon theme** - flat graphite surfaces with a single accent colour
 - **Dynamic island** - a pill that docks at the top of the screen and expands
-  on hover, carrying live quotes and alert actions
+  on hover, carrying live quotes and alert actions. Right click it to send it
+  behind the other windows, bring it back in front, or park it in any corner.
+  Drag it to move it anywhere, and `Ctrl+Shift+I` toggles it to the front even
+  when it is buried behind another app
 - **Pinnable desktop widget** - drag the chart out of the window and it pins
   as a small always-on-top widget anywhere on the desktop, still receiving
   live data

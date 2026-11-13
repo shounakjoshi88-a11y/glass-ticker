@@ -13,6 +13,18 @@ body.bye #pill{animation:lift .24s ease-in forwards}
 .c,.t,.e{position:absolute;left:0;top:0}
 .c{width:100%;height:38px;display:flex;align-items:center;justify-content:flex-start;gap:10px;padding:0 17px 0 9px;transition:opacity .22s,filter .3s,transform .4s}
 #pill.open .c,#pill.toast .c{opacity:0;filter:blur(6px);transform:scale(.9);pointer-events:none}
+#pill{cursor:grab}#pill button{cursor:pointer}
+/* island window menu ------------------------------------------------------ */
+#menu{position:absolute;top:56px;left:50%;transform:translateX(-50%) translateY(-6px);width:214px;padding:6px;border-radius:13px;background:rgba(20,22,28,.95);backdrop-filter:blur(22px) saturate(150%);border:1px solid rgba(255,255,255,.13);box-shadow:0 20px 48px rgba(0,0,0,.6);display:none;opacity:0;transition:opacity .16s ease,transform .16s ease;z-index:60}
+#menu.on{display:block;opacity:1;transform:translateX(-50%) translateY(0)}
+#menu .mi{display:flex;width:100%;align-items:center;justify-content:space-between;gap:10px;padding:6px 9px;border-radius:7px;color:#e7e9ef;font-size:11.5px;text-align:left}
+#menu .mi:hover{background:rgba(255,255,255,.1)}
+#menu .mi .k{font-size:9.5px;color:#8b8d96;letter-spacing:.3px}
+#menu .mi.on .k{color:#5eeaa8}
+#menu .sep{height:1px;margin:5px 5px;background:rgba(255,255,255,.11)}
+#menu .grp{font-size:9px;letter-spacing:.7px;text-transform:uppercase;color:#767a85;padding:6px 9px 3px}
+#menu .pos{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:1px 5px 5px}
+#menu .pos .mi{justify-content:center;padding:5px 2px;font-size:10px;background:rgba(255,255,255,.05)}
 .ci{display:flex;align-items:center;gap:9px;font:500 11.5px var(--mono);white-space:nowrap}.ci b{font-weight:700}.ci .ch{display:flex;align-items:center}
 .ci.sw{animation:swap .55s var(--sp)}@keyframes swap{from{opacity:0;transform:translateY(12px);filter:blur(5px)}}
 /* battery ring */
@@ -56,6 +68,23 @@ svg.i{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.6;stro
 .ab{display:flex;gap:8px;margin-top:10px}.ab button{flex:1;height:32px;border-radius:12px;font-weight:650;font-size:12px;transition:filter .2s,background .2s,transform .3s var(--sp)}.ab button:active{transform:scale(.95)}
 .ab .w{background:#f4f4f5;color:#0a0a0a}.ab .w:hover{filter:brightness(.86)}.ab .d{background:#1d1d1f;color:#e6e6e8}.ab .d:hover{background:#2a2a2d}
 </style></head><body>
+<div id="menu">
+  <button class="mi" id="mi-pin"><span id="mi-pin-l">Send to back</span><span class="k" id="mi-pin-k">behind</span></button>
+  <div class="sep"></div>
+  <div class="grp">Position</div>
+  <div class="pos" id="mi-pos">
+    <button class="mi" data-p="top-left">Top left</button>
+    <button class="mi" data-p="top-center">Top mid</button>
+    <button class="mi" data-p="top-right">Top right</button>
+    <button class="mi" data-p="bottom-left">Bottom left</button>
+    <button class="mi" data-p="bottom-center">Bottom mid</button>
+    <button class="mi" data-p="bottom-right">Bottom right</button>
+  </div>
+  <div class="sep"></div>
+  <button class="mi" id="mi-hide"><span>Hide island</span><span class="k">esc</span></button>
+  <div class="sep"></div>
+  <button class="mi" id="mi-front"><span>Bring to front</span><span class="k">ctrl shift i</span></button>
+</div>
 <div id="pill">
 <div class="c"><div class="ring" id="r1"></div><div class="ci" id="ci"><b>GLASS</b><span>Loading…</span></div></div>
 <div class="t"><div class="ring big" id="r2"></div><div class="tx"><b id="tt">Charging</b><small id="ts"></small></div><div class="tp" id="tp">—</div></div>
@@ -109,4 +138,62 @@ document.addEventListener('mouseleave',()=>{setIgn(true);clearTimeout(closeT);cl
 $('#gr').onclick=e=>{const b=e.target.closest('[data-k]');if(b){idx=+b.dataset.k;renderE()}};
 $('#rs').onclick=$('#ob').onclick=()=>api.islandRestore();$('.c').ondblclick=()=>api.islandRestore();
 $('#nx').onclick=()=>{if(P&&P.items.length){idx=(idx+1)%P.items.length;renderC(false);renderE()}};
+// ---- island window controls -------------------------------------------------
+// Drag the pill to move it, right click for the menu: send it behind the
+// other windows, bring it back in front, or park it in a corner.
+(()=>{
+  const pill=document.getElementById('pill');
+  const menu=document.getElementById('menu');
+  if(!pill||!window.api)return;
+  let interactive=false,dragging=false,moved=false,sx=0,sy=0,wx=0,wy=0,pending=null,raf=0,menuOpen=false,state={pinned:true,position:'top-center'};
+  const setInteractive=on=>{if(on===interactive)return;interactive=on;api.islandInteractive(on);};
+  const queueMove=(x,y)=>{pending={x,y};if(!raf)raf=requestAnimationFrame(()=>{raf=0;if(pending)api.islandMove(pending);});};
+  const pillBox=()=>pill.getBoundingClientRect();
+  const onPill=e=>{const r=pillBox();return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;};
+  const setMenu=open=>{
+    menuOpen=open;
+    menu.classList.toggle('on',open);
+    if(open)setInteractive(true);
+  };
+  const paintMenu=()=>{
+    $('#mi-pin-l').textContent=state.pinned?'Send to back':'Always on front';
+    $('#mi-pin-k').textContent=state.pinned?'behind':'on top';
+    $('#mi-pin').classList.toggle('on',state.pinned);
+    $('#mi-pos').querySelectorAll('[data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===state.position));
+  };
+  api.islandState().then(s=>{if(s){state.pinned=!!s.pinned;state.position=s.position||state.position;paintMenu();}}).catch(()=>{});
+  if(api.onIslandState)api.onIslandState(s=>{state.pinned=!!s.pinned;state.position=s.position||state.position;paintMenu();});
+  document.addEventListener('mousemove',e=>{
+    if(dragging){
+      if(Math.abs(e.screenX-sx)>3||Math.abs(e.screenY-sy)>3)moved=true;
+      queueMove(wx+(e.screenX-sx),wy+(e.screenY-sy));
+      return;
+    }
+    setInteractive(onPill(e)||menuOpen);
+  });
+  document.addEventListener('mouseleave',()=>{if(!dragging&&!menuOpen)setInteractive(false);});
+  pill.addEventListener('mousedown',e=>{
+    if(e.button!==0||e.target.closest('button'))return;
+    dragging=true;moved=false;sx=e.screenX;sy=e.screenY;wx=window.screenX;wy=window.screenY;
+    document.body.style.cursor='grabbing';
+    setMenu(false);
+    e.preventDefault();
+  });
+  window.addEventListener('mouseup',()=>{if(!dragging)return;dragging=false;document.body.style.cursor='';});
+  document.addEventListener('contextmenu',e=>{
+    if(!onPill(e))return;
+    e.preventDefault();
+    setMenu(!menuOpen);
+    if(menuOpen)paintMenu();
+  });
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false);});
+  menu.addEventListener('click',e=>{
+    const pos=e.target.closest('[data-p]');
+    if(pos){state.position=pos.dataset.p;api.islandPosition(state.position);paintMenu();setMenu(false);return;}
+    if(e.target.closest('#mi-pin')){state.pinned=!state.pinned;api.islandPin(state.pinned);paintMenu();setMenu(false);return;}
+    if(e.target.closest('#mi-hide')){setMenu(false);api.islandClose();return;}
+    if(e.target.closest('#mi-front')){setMenu(false);api.islandToggleFront();}
+  });
+  menu.addEventListener('mouseleave',()=>{if(!dragging)setTimeout(()=>{if(!menu.querySelector(':hover'))setMenu(false);},400);});
+})();
 </script></body></html>

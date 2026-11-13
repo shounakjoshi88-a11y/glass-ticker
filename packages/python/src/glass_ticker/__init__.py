@@ -19,7 +19,7 @@ from .installer import (
 from .server import TickerServer, iframe_html
 from .yahoo import YahooClient, YahooError
 
-__version__ = "2.6.1"
+__version__ = "2.7.0"
 
 __all__ = [
     "__version__",
