@@ -49,6 +49,12 @@ android {
         compose = true
     }
 
+    lint {
+        // Lint is run in its own job, not as part of the release build.
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
