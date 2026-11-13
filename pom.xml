@@ -6,7 +6,7 @@
 
   <groupId>com.github.shounakjoshi88</groupId>
   <artifactId>glass-ticker-launcher</artifactId>
-  <version>3.1.1</version>
+  <version>3.1.2</version>
   <packaging>jar</packaging>
 
   <name>Glass Ticker Launcher</name>

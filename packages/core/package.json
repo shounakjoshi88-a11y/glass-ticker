@@ -1,6 +1,6 @@
 {
   "name": "@glass-ticker/core",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "Glass Ticker as an embeddable web component - works in any framework",
   "type": "module",
   "main": "./dist/glass-ticker.js",

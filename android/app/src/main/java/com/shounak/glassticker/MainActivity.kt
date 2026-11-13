@@ -102,6 +102,10 @@ private val defaultSymbols = listOf(
     "HDFCBANK.NS", "AAPL", "NVDA", "BTC-USD"
 )
 
+/** Strip the exchange suffix so "^NSEI" reads "NSEI" and "RELIANCE.NS" reads "RELIANCE". */
+fun symbolLabel(s: String): String =
+    s.replace(Regex("\\\\.(NS|BO)$", RegexOption.IGNORE_CASE), "").removePrefix("^")
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GlassTickerApp() {
@@ -118,6 +122,7 @@ fun GlassTickerApp() {
     var results by remember { mutableStateOf<List<SearchHit>>(emptyList()) }
     var selected by remember { mutableStateOf<Quote?>(null) }
     var liveOn by remember { mutableStateOf(false) }
+    var islandExpanded by remember { mutableStateOf(false) }
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -274,6 +279,13 @@ fun GlassTickerApp() {
                 }
             }
         } else {
+            val islandQuote = selected ?: quotes.firstOrNull()
+            IslandPill(
+                quote = islandQuote,
+                expanded = islandExpanded,
+                onToggle = { islandExpanded = !islandExpanded },
+                onOpen = { islandQuote?.let { selected = it } }
+            )
             PullToRefreshBox(
                 isRefreshing = refreshing,
                 onRefresh = { scope.launch { refresh() } },
@@ -355,7 +367,7 @@ private fun QuoteRow(quote: Quote, onClick: () -> Unit, onRemove: () -> Unit) {
         }
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
-            Text(quote.symbol, color = Theme.text, fontWeight = FontWeight.SemiBold)
+            Text(symbolLabel(quote.symbol), color = Theme.text, fontWeight = FontWeight.SemiBold)
             Text(
                 quote.name,
                 color = Theme.muted,
@@ -397,7 +409,7 @@ private fun Monogram(symbol: String) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            symbol.take(2).uppercase(),
+            symbolLabel(symbol).take(2).uppercase(),
             color = Theme.muted,
             fontSize = 11.sp,
             fontWeight = FontWeight.Bold
@@ -429,7 +441,7 @@ private fun DetailScreen(quote: Quote, onBack: () -> Unit) {
                     containerColor = Theme.background,
                     titleContentColor = Theme.text
                 ),
-                title = { Text(quote.symbol, fontWeight = FontWeight.SemiBold) },
+                title = { Text(symbolLabel(quote.symbol), fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Theme.muted)
@@ -557,11 +569,122 @@ private fun DetailScreen(quote: Quote, onBack: () -> Unit) {
 }
 
 @Composable
+private fun IslandPill(
+    quote: Quote?,
+    expanded: Boolean,
+    onToggle: () -> Unit,
+    onOpen: () -> Unit
+) {
+    if (quote == null) return
+    val up = quote.isUp
+    val colour = if (up) Theme.up else Theme.down
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(20.dp))
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(Theme.raised, Theme.card)
+                    )
+                )
+                .clickable { onToggle() }
+                .padding(horizontal = 14.dp, vertical = 10.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (quote.logoUrl != null) {
+                    AsyncImage(
+                        model = quote.logoUrl,
+                        contentDescription = quote.symbol,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(Theme.raised),
+                        contentScale = ContentScale.Fit
+                    )
+                } else {
+                    Box(
+                        Modifier
+                            .size(24.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(Theme.raised),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            symbolLabel(quote.symbol).take(2).uppercase(),
+                            color = Theme.muted,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                Spacer(Modifier.width(10.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        symbolLabel(quote.symbol),
+                        color = Theme.text,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 13.sp
+                    )
+                    Text(
+                        quote.name,
+                        color = Theme.muted,
+                        fontSize = 10.sp,
+                        maxLines = 1
+                    )
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        Format.price(quote.price, quote.currency),
+                        color = Theme.text,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp
+                    )
+                    Text(
+                        Format.percent(quote.changePercent),
+                        color = colour,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        }
+        if (expanded) {
+            Spacer(Modifier.height(6.dp))
+            GlassPanel {
+                Column {
+                    Text("Tap to open full detail", color = Theme.muted, fontSize = 11.sp)
+                    Spacer(Modifier.height(6.dp))
+                    androidx.compose.material3.Button(
+                        onClick = onOpen,
+                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                            containerColor = Theme.accent,
+                            contentColor = Color(0xFF0B0C0E)
+                        )
+                    ) {
+                        Text("Open ${symbolLabel(quote.symbol)}", fontWeight = FontWeight.SemiBold)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun GlassPanel(content: @Composable () -> Unit) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Theme.card),
         shape = RoundedCornerShape(18.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                Brush.verticalGradient(listOf(Theme.raised, Theme.card)),
+                RoundedCornerShape(18.dp)
+            )
     ) {
         Box(Modifier.padding(14.dp)) { content() }
     }
