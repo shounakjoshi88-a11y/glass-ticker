@@ -43,10 +43,10 @@ winget install ShounakJoshi.GlassTicker
 
 ```bash
 # macOS
-open GlassTicker-3.0.0-arm64.dmg
+open GlassTicker-3.1.0-arm64.dmg
 
 # Linux
-sudo dpkg -i glass-ticker_3.0.0_amd64.deb
+sudo dpkg -i glass-ticker_3.1.0_amd64.deb
 ```
 
 None of the desktop binaries are code-signed, so Windows SmartScreen and macOS
@@ -60,24 +60,24 @@ Python service, a Java backend, a React app or a page with no framework at all.
 
 | Stack | Package | Install (works today) |
 | --- | --- | --- |
-| Any web app | `@glass-ticker/core` | `npm i .../v3.0.0/glass-ticker-core-3.0.0.tgz` |
-| React | `@glass-ticker/react` | `npm i .../v3.0.0/glass-ticker-react-3.0.0.tgz` |
-| Vue | `@glass-ticker/vue` | `npm i .../v3.0.0/glass-ticker-vue-3.0.0.tgz` |
-| Node backend | `@glass-ticker/server` | `npm i .../v3.0.0/glass-ticker-server-3.0.0.tgz` |
-| Desktop launcher | `glass-ticker` | `npm i .../v3.0.0/glass-ticker-3.0.0.tgz` |
-| Python | `glass-ticker` | `pip install .../v3.0.0/glass_ticker-3.0.0-py3-none-any.whl` |
-| Java / JVM | `glass-ticker-launcher` | `java -jar glass-ticker-launcher-3.0.0.jar` |
+| Any web app | `@glass-ticker/core` | `npm i .../v3.1.0/glass-ticker-core-3.1.0.tgz` |
+| React | `@glass-ticker/react` | `npm i .../v3.1.0/glass-ticker-react-3.1.0.tgz` |
+| Vue | `@glass-ticker/vue` | `npm i .../v3.1.0/glass-ticker-vue-3.1.0.tgz` |
+| Node backend | `@glass-ticker/server` | `npm i .../v3.1.0/glass-ticker-server-3.1.0.tgz` |
+| Desktop launcher | `glass-ticker` | `npm i .../v3.1.0/glass-ticker-3.1.0.tgz` |
+| Python | `glass-ticker` | `pip install .../v3.1.0/glass_ticker-3.1.0-py3-none-any.whl` |
+| Java / JVM | `glass-ticker-launcher` | `java -jar glass-ticker-launcher-3.1.0.jar` |
 
 The `...` is
 `https://github.com/shounakjoshi88-a11y/glass-ticker/releases/download`
 - spelled out:
 
 ```bash
-base=https://github.com/shounakjoshi88-a11y/glass-ticker/releases/download/v3.0.0
+base=https://github.com/shounakjoshi88-a11y/glass-ticker/releases/download/v3.1.0
 
-npm install "$base/glass-ticker-core-3.0.0.tgz"      # or -react, -vue, -server
-pip install "$base/glass_ticker-3.0.0-py3-none-any.whl"
-curl -LO "$base/glass-ticker-launcher-3.0.0.jar"
+npm install "$base/glass-ticker-core-3.1.0.tgz"      # or -react, -vue, -server
+pip install "$base/glass_ticker-3.1.0-py3-none-any.whl"
+curl -LO "$base/glass-ticker-launcher-3.1.0.jar"
 ```
 
 There are three distribution channels and they are not at the same stage:
@@ -266,8 +266,8 @@ and attaches them, the package tarballs, the wheel and the launcher jar to the
 release:
 
 ```bash
-git tag v3.0.0
-git push origin v3.0.0
+git tag v3.1.0
+git push origin v3.1.0
 ```
 
 Every version number lives in one place per platform - `package.json` for the

@@ -69,26 +69,19 @@ svg.i{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.6;stro
 .ab .w{background:#f4f4f5;color:#0a0a0a}.ab .w:hover{filter:brightness(.86)}.ab .d{background:#1d1d1f;color:#e6e6e8}.ab .d:hover{background:#2a2a2d}
 </style>
 <style id="glcss">
-/* v4.0 liquid glass lighting */
-#pill{background:radial-gradient(130% 150% at 50% -45%,color-mix(in srgb,var(--a) 20%,transparent),transparent 62%),linear-gradient(180deg,#101214,#000 70%);
- box-shadow:0 0 0 1px rgba(255,255,255,.13),inset 0 1px 0 rgba(255,255,255,.26),inset 0 -1px 0 rgba(255,255,255,.05),inset 0 0 26px color-mix(in srgb,var(--a) 9%,transparent)}
-#pill::before{content:"";position:absolute;left:8%;right:8%;top:0;height:46%;border-radius:0 0 60% 60%/0 0 100% 100%;pointer-events:none;z-index:6;
- background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,0));opacity:.8}
-#pill::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:7;
- background:radial-gradient(130px circle at var(--mx,-999px) var(--my,-999px),rgba(255,255,255,.9),rgba(255,255,255,0) 72%);
- -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
-#pill.open{background:radial-gradient(120% 70% at 50% -20%,color-mix(in srgb,var(--a) 22%,transparent),transparent 65%),radial-gradient(90% 60% at 100% 110%,rgba(120,150,255,.12),transparent 70%),linear-gradient(180deg,#111316,#020203 75%)}
-.ring.chg{filter:drop-shadow(0 0 5px color-mix(in srgb,var(--g) 60%,transparent))}
-.tl,.bchip,#rs,#bd{background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border-color:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 6px 14px -8px rgba(0,0,0,.9)}
-#bd{background:linear-gradient(180deg,color-mix(in srgb,var(--a) 26%,rgba(255,255,255,.08)),color-mix(in srgb,var(--a) 8%,#0b0b0b))}
-.tl:hover,#rs:hover{background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,.05))}
-.tl.on{background:linear-gradient(180deg,color-mix(in srgb,var(--a) 22%,rgba(255,255,255,.06)),color-mix(in srgb,var(--a) 6%,#0d0d0e));box-shadow:inset 0 1px 0 color-mix(in srgb,var(--a) 50%,#fff),0 0 18px -6px var(--a)}
-.ab .w{background:linear-gradient(180deg,#fff,rgba(255,255,255,.76));box-shadow:inset 0 1px 0 #fff,inset 0 -3px 7px rgba(0,0,0,.14),0 8px 20px -6px color-mix(in srgb,var(--a) 60%,transparent)}
-.ab .d{background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.04));box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
-.ab .d:hover{background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.07))}
+/* v4.1 restrained glass */
+#pill{background:linear-gradient(180deg,#101113,#000 80%);box-shadow:0 0 0 1px rgba(255,255,255,.12),inset 0 1px 0 rgba(255,255,255,.2)}
+#pill::before{content:"";position:absolute;left:10%;right:10%;top:0;height:40%;border-radius:0 0 60% 60%/0 0 100% 100%;pointer-events:none;z-index:6;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,0))}
+#pill.open::before{height:22%;opacity:.5}
+.ring.chg{animation:none;filter:none}
+.tl,.bchip,#rs,#bd{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+#bd{background:color-mix(in srgb,var(--a) 16%,#0b0b0b);box-shadow:none}
+.tl:hover,#rs:hover{background:rgba(255,255,255,.11)}
+.tl.on{background:color-mix(in srgb,var(--a) 12%,#0d0d0e);box-shadow:none}
+.ab .w{background:#f3f4f6;box-shadow:inset 0 1px 0 #fff}
+.ab .d{background:rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+.ab .d:hover{background:rgba(255,255,255,.14)}
 .ab button{position:relative;overflow:hidden}
-#spk{filter:drop-shadow(0 0 6px color-mix(in srgb,var(--a) 40%,transparent))}
-#pill.open::before{height:26%;opacity:.4}
 </style></head><body>
 <div id="menu">
   <button class="mi" id="mi-pin"><span id="mi-pin-l">Send to back</span><span class="k" id="mi-pin-k">behind</span></button>
@@ -235,13 +228,9 @@ $('#nx').onclick=()=>{if(P&&P.items.length){idx=(idx+1)%P.items.length;renderC(f
 })();
 </script>
 <script>
-/* v4.0 jelly motion + pointer light */
+/* v4.1 subtle settle on expand */
 (function(){
- const pl=document.getElementById('pill');if(!pl||!pl.animate)return;
- const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
- const jelly=()=>{if(rm||!document.body.classList.contains('gl'))return;pl.animate([{transform:'scale(1,1)'},{transform:'scale(1.045,.93)',offset:.28},{transform:'scale(.975,1.035)',offset:.55},{transform:'scale(1.012,.99)',offset:.78},{transform:'scale(1,1)'}],{duration:640,easing:'ease-out'})};
- let prev='';new MutationObserver(()=>{const c=pl.className;if(c!==prev){const was=prev;prev=c;if(was!==''&&(/\b(open|toast)\b/.test(c)!==/\b(open|toast)\b/.test(was)||/\bopen\b/.test(c)!==/\bopen\b/.test(was)))jelly()}}).observe(pl,{attributes:true,attributeFilter:['class']});
- addEventListener('mousemove',e=>{const r=pl.getBoundingClientRect();pl.style.setProperty('--mx',(e.clientX-r.left)+'px');pl.style.setProperty('--my',(e.clientY-r.top)+'px')});
- document.addEventListener('mouseleave',()=>{pl.style.removeProperty('--mx');pl.style.removeProperty('--my')});
+ const pl=document.getElementById('pill');if(!pl||!pl.animate||matchMedia('(prefers-reduced-motion:reduce)').matches||!document.body.classList.contains('gl'))return;
+ let prev='';new MutationObserver(()=>{const c=pl.className;if(c!==prev){const was=prev;prev=c;if(was!==''&&/\b(open|toast)\b/.test(c)!==/\b(open|toast)\b/.test(was))pl.animate([{transform:'scale(1)'},{transform:'scale(1.02,.98)',offset:.35},{transform:'scale(.995,1.008)',offset:.7},{transform:'scale(1)'}],{duration:380,easing:'ease-out'})}}).observe(pl,{attributes:true,attributeFilter:['class']});
 })();
 </script></body></html>
