@@ -1,10 +1,10 @@
 {
-  "version": "2.6.1",
+  "version": "2.7.0",
   "description": "Glass Ticker - a frameless acrylic desktop market ticker for Windows",
   "homepage": "https://github.com/shounakjoshi88-a11y/glass-ticker",
   "license": "MIT",
-  "url": "https://github.com/shounakjoshi88-a11y/glass-ticker/releases/download/v2.6.1/GlassTicker.exe",
-  "hash": "8725d186cea6dee466e4a28aa5dad2430e4209317ce425dbf8dc031ea826e41a",
+  "url": "https://github.com/shounakjoshi88-a11y/glass-ticker/releases/download/v2.7.0/GlassTicker.exe",
+  "hash": "3f4acb64bd4e72ac118be8e7d0fe953b7ccc8d3f039d50e5bcdf1225f1b72a27",
   "bin": "GlassTicker.exe",
   "shortcuts": [
     [
