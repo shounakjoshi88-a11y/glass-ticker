@@ -12,8 +12,8 @@ android {
         applicationId = "com.shounak.glassticker"
         minSdk = 26
         targetSdk = 36
-        versionCode = 280
-        versionName = "2.8.0"
+        versionCode = 290
+        versionName = "2.9.0"
     }
 
     signingConfigs {
