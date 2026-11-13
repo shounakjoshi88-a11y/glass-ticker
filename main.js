@@ -5,7 +5,25 @@ if(!app.requestSingleInstanceLock()){app.quit();return}
 let win,tray,toTray=false,quitting=false;
 const pinnedWidgets=new Map(); let widgetSeq=0;
 const icon=path.join(__dirname,'icon.png'),cfg=()=>path.join(app.getPath('userData'),'win.json');
-const show=()=>{win.show();win.focus()};
+let island=null,lastIsland=null;
+const closeIsland=()=>{if(island&&!island.isDestroyed())island.close();island=null};
+const show=()=>{closeIsland();win.show();win.focus()};
+function openIsland(p){
+  if(p)lastIsland=p;
+  if(island&&!island.isDestroyed())return;
+  const {screen}=require('electron'),wa=screen.getDisplayMatching(win.getBounds()).workArea,IW=440,IH=240;
+  island=new BrowserWindow({width:IW,height:IH,x:Math.round(wa.x+(wa.width-IW)/2),y:wa.y,frame:false,transparent:true,backgroundColor:'#00000000',resizable:false,movable:false,minimizable:false,maximizable:false,alwaysOnTop:true,skipTaskbar:true,hasShadow:false,focusable:false,show:false,
+    webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,sandbox:true}});
+  island.setAlwaysOnTop(true,'screen-saver');island.setVisibleOnAllWorkspaces(true,{visibleOnFullScreen:true});
+  island.setIgnoreMouseEvents(true,{forward:true});
+  island.loadFile('island.html');
+  island.webContents.once('did-finish-load',()=>{if(lastIsland)island.webContents.send('island:data',lastIsland);island.showInactive();win.hide()});
+  island.on('closed',()=>{island=null});
+}
+ipcMain.handle('island-open',(_,p)=>openIsland(p));
+ipcMain.on('island-update',(_,p)=>{lastIsland=p;if(island&&!island.isDestroyed())island.webContents.send('island:data',p)});
+ipcMain.on('island-ignore',(_,b)=>{if(island&&!island.isDestroyed())island.setIgnoreMouseEvents(!!b,{forward:true})});
+ipcMain.handle('island-restore',()=>show());
 function createWindow(){
   let c={};try{c=JSON.parse(fs.readFileSync(cfg()))}catch{}
   win=new BrowserWindow({width:c.width||1020,height:c.height||640,x:c.x,y:c.y,minWidth:460,minHeight:320,icon,
