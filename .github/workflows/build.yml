@@ -9,17 +9,53 @@ permissions:
   contents: write
 
 jobs:
-  win:
-    runs-on: windows-latest
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: win
+            os: windows-latest
+            artifact_name: GlassTicker-windows
+            artifact_path: dist/GlassTicker.exe
+            release_files: |
+              dist/GlassTicker.exe
+              dist/release.json
+              dist/GlassTicker.exe.sha256
+          - platform: mac
+            os: macos-latest
+            artifact_name: GlassTicker-macos
+            artifact_path: |
+              dist/*.dmg
+              dist/*.zip
+            release_files: |
+              dist/*.dmg
+              dist/*.zip
+          - platform: linux
+            os: ubuntu-latest
+            artifact_name: GlassTicker-linux
+            artifact_path: |
+              dist/*.AppImage
+              dist/*.deb
+            release_files: |
+              dist/*.AppImage
+              dist/*.deb
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
+
       - uses: actions/setup-node@v7
-        with: { node-version: 20, cache: npm }
+        with:
+          node-version: 20
+          cache: npm
+
       - run: npm ci
-      # Builds on Windows so rcedit can embed build/icon.ico into the exe.
-      # Building on Linux skips that step and ships a generic icon.
-      - run: npm run dist
+
+      - name: Build
+        run: npm run dist:${{ matrix.platform }}
+
       - name: Compute release metadata
+        if: matrix.platform == 'win'
         shell: pwsh
         run: |
           $exe = "dist/GlassTicker.exe"
@@ -39,21 +75,17 @@ jobs:
           $meta | ConvertTo-Json | Set-Content -Path "dist/release.json" -Encoding utf8
           "$hash  GlassTicker.exe" | Set-Content -Path "dist/GlassTicker.exe.sha256" -Encoding ascii
           Write-Output "version=$version sha256=$hash size=$size"
+
       - uses: actions/upload-artifact@v7
         with:
-          name: GlassTicker
-          path: |
-            dist/GlassTicker.exe
-            dist/release.json
-            dist/GlassTicker.exe.sha256
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_path }}
           if-no-files-found: error
+
       - name: Attach to release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v3
         with:
-          files: |
-            dist/GlassTicker.exe
-            dist/release.json
-            dist/GlassTicker.exe.sha256
+          files: ${{ matrix.release_files }}
           draft: false
           generate_release_notes: true
