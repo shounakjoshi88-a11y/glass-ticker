@@ -207,6 +207,10 @@ jobs:
   release-assets:
     name: Attach the packages to the release
     runs-on: ubuntu-latest
+    # The packages themselves need no token, but attaching them to the release
+    # does - the workflow default is read-only, so ask for write here.
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v7
 
