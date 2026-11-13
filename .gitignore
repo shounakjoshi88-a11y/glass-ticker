@@ -13,3 +13,4 @@ Thumbs.db
 *.whl
 __pycache__/
 *.py[cod]
+packages/*/build/
