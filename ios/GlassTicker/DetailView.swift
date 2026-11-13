@@ -111,18 +111,14 @@ struct DetailView: View {
                             .lineStyle(StrokeStyle(lineWidth: 2))
                         }
                         if let first = points.first, let last = points.last {
+                            let lowest = points.map(\.price).min() ?? last.price
                             AreaMark(
-                                x: .value("Date", first.date),
-                                y: .value("Price", first.price),
-                                width: .fixed(0)
+                                xStart: .value("Date", first.date),
+                                xEnd: .value("Date", last.date),
+                                yStart: .value("Price", lowest),
+                                yEnd: .value("Price", last.price)
                             )
-                            .foregroundStyle(stroke.opacity(0.12))
-                            AreaMark(
-                                x: .value("Date", last.date),
-                                y: .value("Price", last.price),
-                                width: .fixed(0)
-                            )
-                            .foregroundStyle(stroke.opacity(0.12))
+                            .foregroundStyle(stroke.opacity(0.14))
                         }
                     }
                     .chartYAxis {

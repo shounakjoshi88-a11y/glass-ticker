@@ -17,7 +17,7 @@ actor YahooAPI {
         configuration.httpCookieStorage = .shared
         configuration.httpCookieAcceptPolicy = .always
         configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
-        configuration.timeoutIntervalForRequest = 20
+        configuration.timeoutIntervalForRequest = .seconds(20)
         session = URLSession(configuration: configuration)
     }
 
@@ -50,7 +50,10 @@ actor YahooAPI {
             URLQueryItem(name: "crumb", value: crumb),
         ]
         let payload = try await get(components.url!)
-        let results = payload["quoteResponse"]?["result"] as? [[String: Any]] ?? []
+        guard let quoteResponse = payload["quoteResponse"] as? [String: Any] else {
+            throw APIClientError.emptyResponse
+        }
+        let results = quoteResponse["result"] as? [[String: Any]] ?? []
         guard !results.isEmpty else { throw APIClientError.emptyResponse }
         return results.compactMap(normalise)
     }
@@ -89,8 +92,10 @@ actor YahooAPI {
             URLQueryItem(name: "includePrePost", value: "true"),
         ]
         let payload = try await get(components.url!)
-        guard
-            let meta = (payload["chart"]?["result"] as? [[String: Any]])?.first?["meta"] as? [String: Any]
+        guard let chart = payload["chart"] as? [String: Any],
+              let result = chart["result"] as? [[String: Any]],
+              let first = result.first,
+              let meta = first["meta"] as? [String: Any]
         else { throw APIClientError.emptyResponse }
 
         let price = number(meta["regularMarketPrice"])
@@ -137,17 +142,24 @@ actor YahooAPI {
             URLQueryItem(name: "includePrePost", value: "true"),
         ]
         let payload = try await get(components.url!)
-        guard
-            let result = (payload["chart"]?["result"] as? [[String: Any]])?.first
+        guard let chart = payload["chart"] as? [String: Any],
+              let result = chart["result"] as? [[String: Any]],
+              let first = result.first
         else { throw APIClientError.emptyResponse }
 
-        let stamps = result["timestamp"] as? [Double] ?? []
-        let closes = ((result["indicators"]?["quote"] as? [[String: Any]])?.first?["close"] as? [Double]) ?? []
+        let stamps = first["timestamp"] as? [Double] ?? []
+        var closes: [Double] = []
+        if let indicators = first["indicators"] as? [String: Any],
+           let quoteBlock = indicators["quote"] as? [[String: Any]],
+           let block = quoteBlock.first,
+           let values = block["close"] as? [Double] {
+            closes = values
+        }
         var points: [ChartPoint] = []
         for (index, stamp) in stamps.enumerated() {
-            guard index < closes.count, let close = closes[index] else { continue }
+            guard index < closes.count else { continue }
             let date = Date(timeIntervalSince1970: stamp)
-            points.append(ChartPoint(id: date, date: date, price: close))
+            points.append(ChartPoint(id: date, date: date, price: closes[index]))
         }
         return points
     }
