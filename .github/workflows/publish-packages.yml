@@ -26,31 +26,45 @@ jobs:
           java-version: 17
           cache: maven
 
-      - name: Publish the npm package
+      - name: Publish the npm packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REGISTRY: https://npm.pkg.github.com
-          SCOPED_NAME: "@${{ github.repository_owner }}/glass-ticker"
+          OWNER: ${{ github.repository_owner }}
         run: |
           set -euo pipefail
-          work="$RUNNER_TEMP/npm-package"
-          cp -r packages/npm/glass-ticker "$work"
-          cd "$work"
-          # GitHub Packages only accepts scoped npm names.
-          node -e "
-            const fs = require('fs');
-            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            pkg.name = process.env.SCOPED_NAME;
-            pkg.publishConfig = { registry: process.env.REGISTRY, access: 'public' };
-            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
-          "
-          echo "//${REGISTRY#https://}:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
-          version="$(node -p "require('./package.json').version")"
-          if npm view "${SCOPED_NAME}@${version}" --registry "$REGISTRY" >/dev/null 2>&1; then
-            echo "npm ${SCOPED_NAME}@${version} is already published - skipping"
-          else
-            npm publish --registry "$REGISTRY" --access public
-          fi
+          # The plugin packages ship under a scope because GitHub Packages
+          # only accepts scoped npm names.
+          for pkg in core react vue server glass-ticker; do
+            if [ "$pkg" = "glass-ticker" ]; then
+              work="$RUNNER_TEMP/npm-glass-ticker"
+              mkdir -p "$work"
+              cp -r packages/npm/glass-ticker/. "$work/"
+            else
+              work="$RUNNER_TEMP/npm-$pkg"
+              cp -r "packages/$pkg" "$work"
+            fi
+            cd "$work"
+            node -e "
+              const fs = require('fs');
+              const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+              if (pkg.name.startsWith('@')) {
+                pkg.name = pkg.name.replace(/^@[^/]+\//, '@' + process.env.OWNER + '/');
+              } else {
+                pkg.name = '@' + process.env.OWNER + '/' + pkg.name;
+              }
+              pkg.publishConfig = { registry: process.env.REGISTRY, access: 'public' };
+              fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+            "
+            echo "//${REGISTRY#https://}:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
+            name="$(node -p "require('./package.json').name")"
+            version="$(node -p "require('./package.json').version")"
+            if npm view "${name}@${version}" --registry "$REGISTRY" >/dev/null 2>&1; then
+              echo "${name}@${version} is already published - skipping"
+            else
+              npm publish --registry "$REGISTRY" --access public
+            fi
+          done
 
       - name: Publish the Maven artifact
         env:
@@ -145,13 +159,16 @@ jobs:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
         run: |
           set -euo pipefail
-          cd packages/npm/glass-ticker
-          version="$(node -p "require('./package.json').version")"
-          if npm view "glass-ticker@${version}" --registry https://registry.npmjs.org >/dev/null 2>&1; then
-            echo "glass-ticker@${version} is already on npmjs - skipping"
-          else
-            npm publish --registry https://registry.npmjs.org --access public
-          fi
+          for dir in packages/core packages/react packages/vue packages/server packages/npm/glass-ticker; do
+            cd "$GITHUB_WORKSPACE/$dir"
+            version="$(node -p "require('./package.json').version")"
+            name="$(node -p "require('./package.json').name")"
+            if npm view "${name}@${version}" --registry https://registry.npmjs.org >/dev/null 2>&1; then
+              echo "${name}@${version} is already on npmjs - skipping"
+            else
+              npm publish --registry https://registry.npmjs.org --access public
+            fi
+          done
 
       - name: Publish to PyPI
         if: env.PYPI_PASSWORD != ''
