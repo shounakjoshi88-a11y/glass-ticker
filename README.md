@@ -76,15 +76,38 @@ against that hash - a mismatched file is deleted instead of executed.
 | **Windows** | portable `.exe` | download it, or `winget install ShounakJoshi.GlassTicker`, or `scoop install glass-ticker` |
 | **macOS** | `.dmg` and `.zip` | download and drag to Applications |
 | **Linux** | `.AppImage` and `.deb` | `chmod +x *.AppImage && ./GlassTicker*.AppImage`, or `sudo dpkg -i *.deb` |
-| **iOS / Android** | the web component | open the component in Safari/Chrome - see below |
+| **iOS / iPadOS** | native SwiftUI `.app` | `GlassTicker-ios.app.zip` from the release - sideload it, or build it yourself |
 
 The window chrome adapts to the platform: the Windows acrylic backdrop on
 Windows 11, the macOS vibrancy material on macOS, and a transparent window
 where the CSS glass does the work on Linux.
 
-iOS and Android cannot run an Electron app, but the **component** works
-there unchanged - it is plain HTML - so point a `WKWebView` (or a Capacitor
-or Cordova shell) at the data API and drop the `<glass-ticker>` tag in.
+### iOS
+
+The iOS build is a **native SwiftUI app**, not a wrapped web view - the
+watchlist, the chart and the search are all native. It talks to Yahoo
+straight through `URLSession`, so there is no CORS to work around and no
+server to run next to the phone.
+
+The source is in [`ios/`](ios/): the Xcode project is generated from
+`ios/project.yml` with [XcodeGen](https://github.com/yonaskolb/XcodeGen), so
+there is no `.pbxproj` to merge by hand.
+
+```bash
+brew install xcodegen
+cd ios && xcodegen generate && open GlassTicker.xcodeproj
+```
+
+CI builds it on every tag and attaches the app to the release. The build is
+unsigned, so to put it on a device you either sign it with your own Apple
+Developer certificate (add `APPLE_CERTIFICATE_P12_BASE64`,
+`APPLE_PROVISIONING_PROFILE_BASE64` and `APPLE_TEAM_ID` as secrets and CI
+will produce a signed `.ipa`), or sideload the unsigned app with AltStore or
+Sideloadly.
+
+Android is not built yet, but the **component** works there unchanged - it
+is plain HTML - so point a `WebView` (or a Capacitor or Cordova shell) at
+the data API and drop the `<glass-ticker>` tag in.
 
 ## Use it as a plugin in your own app
 
