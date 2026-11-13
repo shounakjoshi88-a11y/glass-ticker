@@ -203,3 +203,49 @@ jobs:
           </settings>
           EOF
           mvn --batch-mode --settings settings.xml -Prelease deploy
+
+  release-assets:
+    name: Attach the packages to the release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # The registries need tokens, but the release does not: the same
+      # tarballs, wheel and jar are attached to it, so `npm install` and
+      # `pip install` can point straight at a release URL today.
+      - name: Build the installable artefacts
+        run: |
+          set -euo pipefail
+          mkdir -p dist-packages
+          for dir in packages/core packages/react packages/vue packages/server packages/npm/glass-ticker; do
+            (cd "$dir" && npm pack --pack-destination "$GITHUB_WORKSPACE/dist-packages")
+          done
+          python -m pip install --upgrade build
+          python -m build --outdir dist-packages packages/python
+          mkdir -p build/classes
+          javac -encoding UTF-8 -d build/classes $(find src/main/java -name '*.java')
+          version="$(node -p "require('./package.json').version")"
+          jar --create --file "dist-packages/glass-ticker-launcher-${version}.jar" \
+            --main-class com.github.shounakjoshi88.glassticker.Launcher \
+            -C build/classes .
+          ls -la dist-packages
+
+      - name: Attach to the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v3
+        with:
+          files: dist-packages/*
+          draft: false
