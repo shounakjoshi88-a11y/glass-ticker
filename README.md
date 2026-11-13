@@ -17,7 +17,7 @@ for anything else, with the same look and the same data.
 
 | Platform | What you get | How |
 | --- | --- | --- |
-| **Windows** | portable `.exe`, no installer | `winget install ShounakJoshi.GlassTicker`, or `scoop install glass-ticker`, or download it |
+| **Windows** | portable `.exe`, no installer | download it, `scoop install glass-ticker`, or `winget install ShounakJoshi.GlassTicker` once the manifest merges |
 | **macOS** (Apple silicon) | `.dmg` and `.zip` | download, drag to Applications |
 | **Linux** (amd64) | `.AppImage` and `.deb` | `chmod +x GlassTicker-*.AppImage && ./GlassTicker-*.AppImage` |
 | **iOS / iPadOS** | native `SwiftUI` app | `GlassTicker-ios.app.zip` - sideload it |
