@@ -115,8 +115,11 @@ CORS to work around and no server to run alongside the phone.
 
 ```bash
 cd android
-./gradlew assembleRelease
+gradle assembleRelease     # needs Gradle 8.11.1 and the Android SDK
 ```
+
+CI does the same thing with the `gradle/actions/setup-gradle` action, so
+there is no Gradle wrapper to keep in the repository.
 
 The APK is signed with the keystore in `android/app/keystore/` - it is a
 **sideload key**, published on purpose so that rebuilds can upgrade an
