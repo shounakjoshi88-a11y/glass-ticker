@@ -34,7 +34,8 @@ jobs:
         run: |
           set -euo pipefail
           # The plugin packages ship under a scope because GitHub Packages
-          # only accepts scoped npm names.
+          # only accepts scoped npm names. The built files are committed, so
+          # nothing has to be built here.
           for pkg in core react vue server glass-ticker; do
             if [ "$pkg" = "glass-ticker" ]; then
               work="$RUNNER_TEMP/npm-glass-ticker"
@@ -62,7 +63,7 @@ jobs:
             if npm view "${name}@${version}" --registry "$REGISTRY" >/dev/null 2>&1; then
               echo "${name}@${version} is already published - skipping"
             else
-              npm publish --registry "$REGISTRY" --access public
+              npm publish --registry "$REGISTRY" --access public --ignore-scripts
             fi
           done
 
@@ -166,7 +167,7 @@ jobs:
             if npm view "${name}@${version}" --registry https://registry.npmjs.org >/dev/null 2>&1; then
               echo "${name}@${version} is already on npmjs - skipping"
             else
-              npm publish --registry https://registry.npmjs.org --access public
+              npm publish --registry https://registry.npmjs.org --access public --ignore-scripts
             fi
           done
 
