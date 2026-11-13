@@ -100,26 +100,20 @@ struct DetailView: View {
                         .foregroundStyle(Theme.muted)
                         .frame(maxWidth: .infinity, minHeight: 200)
                 } else {
-                    Chart {
-                        ForEach(points) { point in
-                            LineMark(
-                                x: .value("Date", point.date),
-                                y: .value("Price", point.price)
+                    Chart(points) { point in
+                        LineMark(
+                            x: .value("Date", point.date),
+                            y: .value("Price", point.price)
+                        )
+                        .interpolationMethod(.catmullRom)
+                        .lineStyle(StrokeStyle(lineWidth: 2))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [stroke.opacity(0.45), stroke.opacity(0.06)],
+                                startPoint: .top,
+                                endPoint: .bottom
                             )
-                            .interpolationMethod(.catmullRom)
-                            .foregroundStyle(stroke)
-                            .lineStyle(StrokeStyle(lineWidth: 2))
-                        }
-                        if let first = points.first, let last = points.last {
-                            let lowest = points.map(\.price).min() ?? last.price
-                            AreaMark(
-                                xStart: .value("Date", first.date),
-                                xEnd: .value("Date", last.date),
-                                yStart: .value("Price", lowest),
-                                yEnd: .value("Price", last.price)
-                            )
-                            .foregroundStyle(stroke.opacity(0.14))
-                        }
+                        )
                     }
                     .chartYAxis {
                         AxisMarks(position: .trailing) { value in
@@ -136,7 +130,7 @@ struct DetailView: View {
                     .chartXAxis {
                         AxisMarks(values: .automatic(desiredCount: 4)) { value in
                             AxisGridLine().foregroundStyle(Theme.line)
-                            AxisValueLabel(format: .dateTime.hour().minute())
+                            AxisValueLabel()
                         }
                     }
                     .frame(height: 220)

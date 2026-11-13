@@ -17,7 +17,7 @@ actor YahooAPI {
         configuration.httpCookieStorage = .shared
         configuration.httpCookieAcceptPolicy = .always
         configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
-        configuration.timeoutIntervalForRequest = .seconds(20)
+        configuration.timeoutIntervalForRequest = 20
         session = URLSession(configuration: configuration)
     }
 
