@@ -71,8 +71,9 @@ against that hash - a mismatched file is deleted instead of executed.
 
 ## What it does
 
-- **Aurora glass theme** - layered translucent surfaces with a soft colour
-  wash behind the charts
+- **Carbon theme** - flat graphite surfaces with a single accent colour
+- **Dynamic island** - a pill that docks at the top of the screen and expands
+  on hover, carrying live quotes and alert actions
 - **Pinnable desktop widget** - drag the chart out of the window and it pins
   as a small always-on-top widget anywhere on the desktop, still receiving
   live data
@@ -82,13 +83,13 @@ against that hash - a mismatched file is deleted instead of executed.
 - **Watchlist tabs** with live sparklines across NSE/BSE indices, Indian and US
   equities, and crypto (`^NSEI`, `RELIANCE.NS`, `AAPL`, `BTC-USD`, ...)
 - **Interactive chart** for the selected symbol with range switching, area or
-  candle style, and an optional SMA overlay
+  candle style, an optional SMA overlay and RSI
 - **Alerts on price targets or percentage moves**, with native Windows
   notifications
 - **Portfolio positions** - quantity and average cost per symbol, with live
   day change and P&L, plus a **currency converter** for the totals
 - **Mini ticker-strip mode** for a single line of scrolling quotes
-- **Light and dark themes**, drag-to-reorder rows, and per-row sorting
+- **Light and dark themes**, drag-to-reorder rows, and sorting by change
 - **Window control** - always on top, opacity slider, start at login, system
   tray, maximize, and the `Ctrl+Shift+G` global hotkey
 - Everything is stored locally (`localStorage` plus a small window-bounds file)
