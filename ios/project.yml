@@ -12,8 +12,8 @@ settings:
     IPHONEOS_DEPLOYMENT_TARGET: "16.0"
     DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
-    MARKETING_VERSION: "2.9.0"
-    CURRENT_PROJECT_VERSION: "2.9.0"
+    MARKETING_VERSION: "3.0.0"
+    CURRENT_PROJECT_VERSION: "3.0.0"
     ENABLE_USER_SCRIPT_SANDBOXING: "NO"
 
 targets:
@@ -47,8 +47,8 @@ targets:
       path: GlassTicker/Info.plist
       properties:
         CFBundleDisplayName: Glass Ticker
-        CFBundleShortVersionString: "2.9.0"
-        CFBundleVersion: "2.9.0"
+        CFBundleShortVersionString: "3.0.0"
+        CFBundleVersion: "3.0.0"
         UILaunchScreen:
           UIColorName: ""
         UIUserInterfaceStyle: Dark

@@ -5,7 +5,11 @@
 ![platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20iOS%20%7C%20Android-E8946F)
 
 A market ticker that lives on the desktop instead of in a browser tab. Frameless,
-acrylic glass, always on top - prices stay visible while you work.
+always on top - prices stay visible while you work.
+
+Two looks ship in the same binary: **Liquid Glass**, where the panels refract a
+slow fluid backdrop, and **Carbon**, the flat graphite design. One button swaps
+them.
 
 It is not only the desktop app. The same UI ships as a **native iOS app**, a
 **native Android app**, and an **embeddable web component** (`<glass-ticker>`)
@@ -39,10 +43,10 @@ winget install ShounakJoshi.GlassTicker
 
 ```bash
 # macOS
-open GlassTicker-2.9.0-arm64.dmg
+open GlassTicker-3.0.0-arm64.dmg
 
 # Linux
-sudo dpkg -i glass-ticker_2.9.0_amd64.deb
+sudo dpkg -i glass-ticker_3.0.0_amd64.deb
 ```
 
 None of the desktop binaries are code-signed, so Windows SmartScreen and macOS
@@ -56,24 +60,24 @@ Python service, a Java backend, a React app or a page with no framework at all.
 
 | Stack | Package | Install (works today) |
 | --- | --- | --- |
-| Any web app | `@glass-ticker/core` | `npm i .../v2.9.0/glass-ticker-core-2.9.0.tgz` |
-| React | `@glass-ticker/react` | `npm i .../v2.9.0/glass-ticker-react-2.9.0.tgz` |
-| Vue | `@glass-ticker/vue` | `npm i .../v2.9.0/glass-ticker-vue-2.9.0.tgz` |
-| Node backend | `@glass-ticker/server` | `npm i .../v2.9.0/glass-ticker-server-2.9.0.tgz` |
-| Desktop launcher | `glass-ticker` | `npm i .../v2.9.0/glass-ticker-2.9.0.tgz` |
-| Python | `glass-ticker` | `pip install .../v2.9.0/glass_ticker-2.9.0-py3-none-any.whl` |
-| Java / JVM | `glass-ticker-launcher` | `java -jar glass-ticker-launcher-2.9.0.jar` |
+| Any web app | `@glass-ticker/core` | `npm i .../v3.0.0/glass-ticker-core-3.0.0.tgz` |
+| React | `@glass-ticker/react` | `npm i .../v3.0.0/glass-ticker-react-3.0.0.tgz` |
+| Vue | `@glass-ticker/vue` | `npm i .../v3.0.0/glass-ticker-vue-3.0.0.tgz` |
+| Node backend | `@glass-ticker/server` | `npm i .../v3.0.0/glass-ticker-server-3.0.0.tgz` |
+| Desktop launcher | `glass-ticker` | `npm i .../v3.0.0/glass-ticker-3.0.0.tgz` |
+| Python | `glass-ticker` | `pip install .../v3.0.0/glass_ticker-3.0.0-py3-none-any.whl` |
+| Java / JVM | `glass-ticker-launcher` | `java -jar glass-ticker-launcher-3.0.0.jar` |
 
 The `...` is
 `https://github.com/shounakjoshi88-a11y/glass-ticker/releases/download`
 - spelled out:
 
 ```bash
-base=https://github.com/shounakjoshi88-a11y/glass-ticker/releases/download/v2.9.0
+base=https://github.com/shounakjoshi88-a11y/glass-ticker/releases/download/v3.0.0
 
-npm install "$base/glass-ticker-core-2.9.0.tgz"      # or -react, -vue, -server
-pip install "$base/glass_ticker-2.9.0-py3-none-any.whl"
-curl -LO "$base/glass-ticker-launcher-2.9.0.jar"
+npm install "$base/glass-ticker-core-3.0.0.tgz"      # or -react, -vue, -server
+pip install "$base/glass_ticker-3.0.0-py3-none-any.whl"
+curl -LO "$base/glass-ticker-launcher-3.0.0.jar"
 ```
 
 There are three distribution channels and they are not at the same stage:
@@ -117,7 +121,8 @@ and a live demo is in [`demo/`](demo/).
 
 ## What it does
 
-- **Carbon theme** - flat graphite surfaces with a single accent colour
+- **Two themes, switched live** - Liquid Glass by default, Carbon when you want
+  the flat one; the island and pinned widgets follow along
 - **Dynamic island** - a pill that docks at the top of the screen and expands
   on hover, carrying live quotes and alert actions. Right click it to send it
   behind the other windows, bring it back in front, or park it in any corner.
@@ -144,6 +149,25 @@ and a live demo is in [`demo/`](demo/).
 The window chrome adapts to the platform: the Windows 11 acrylic backdrop on
 Windows, the macOS vibrancy material on macOS, and a transparent window where
 the CSS glass does the work on Linux.
+
+## Two themes, one button apart
+
+**Liquid Glass** is the default. The panels do not just blur, they bend: an SVG
+displacement lens refracts the fluid backdrop behind each card, so the light
+drags as the window moves. Sliders have a liquid thumb with a spring anchor, the
+segmented controls glide instead of snapping, buttons answer with a press ripple
+and a pointer light follows the cursor across the surface.
+
+**Carbon** is the flat one - the original graphite design with a single accent
+colour, hard edges, and none of the animation. It is the theme for reading a
+number without any glass in the way, and for machines where the GPU should stay
+idle.
+
+Switch with the glass/carbon button in the toolbar, or Preferences -> Style. The
+choice is written to `localStorage` and the dynamic island and pinned widgets
+pick it up immediately, without a restart. The Glass, Liquid light and slider
+controls in Preferences are greyed out under Carbon because only the glass theme
+uses them.
 
 ## The mobile apps are native
 
@@ -242,8 +266,8 @@ and attaches them, the package tarballs, the wheel and the launcher jar to the
 release:
 
 ```bash
-git tag v2.9.0
-git push origin v2.9.0
+git tag v3.0.0
+git push origin v3.0.0
 ```
 
 Every version number lives in one place per platform - `package.json` for the

@@ -110,6 +110,7 @@ button:active{transform:scale(.95)}
 .pn input:focus,.pn select:focus,#converter input:focus{border-color:color-mix(in srgb,var(--a) 55%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 13%,transparent)}
 select{appearance:none;padding-right:26px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='m3 4.5 3 3 3-3' fill='none' stroke='%238b8f96' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;background-size:12px;cursor:pointer}
 select option{background:var(--c1);color:var(--ink)}
+.pr2 select{height:30px;padding:0 26px 0 11px;border-radius:8px;border:1px solid var(--line2);background-color:var(--c1);color:var(--ink);font:500 11.5px var(--mono);outline:0;cursor:pointer}
 .pri{height:30px;padding:0 14px;border-radius:8px;background:var(--ink);color:var(--bg);font-weight:650;font-size:11.5px}.pri:hover{filter:brightness(.86)}
 .sec{height:30px;padding:0 12px;border-radius:8px;background:var(--c3);font-weight:600;font-size:11.5px;display:flex;align-items:center;gap:7px}.sec:hover{background:var(--line2)}.sec .i{width:14px;height:14px}
 #at,#pt{margin-left:auto;font:500 10.5px var(--mono);color:var(--muted)}#at:not(:empty){color:var(--g)}
@@ -223,17 +224,211 @@ body.tt *{transition:background-color .45s,border-color .45s,color .35s,fill .35
 @keyframes chipIn{from{opacity:0;transform:scale(.7)}}
 #toast{position:fixed;left:50%;bottom:48px;transform:translate(-50%,12px);padding:8px 14px;border-radius:10px;background:var(--c1);border:1px solid var(--line2);box-shadow:var(--sh);font:500 11px var(--mono);opacity:0;pointer-events:none;transition:opacity .25s,transform .45s var(--spring);z-index:80}
 #toast.on{opacity:1;transform:translate(-50%,0)}
+#detin{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:8px}
+/* the fluid backdrop lives outside the glass stylesheet so that turning the
+   glass theme off hides it instead of turning it into a block element */
+#lq{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:0;transition:opacity 1.2s ease}
+#lq.on{opacity:1}
+body.nofluid #lq{display:none}
+body:not(.gl) #glassrow,body:not(.gl) #lightrow{opacity:.45;pointer-events:none}
+#style.on{color:var(--a);background:color-mix(in srgb,var(--a) 14%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--a) 42%,transparent)}
 #theme .i{transition:transform .65s var(--spring)}
 #pin{position:relative}#pin::after{content:"";position:absolute;left:28%;right:28%;bottom:3px;height:2px;border-radius:2px;background:var(--a);box-shadow:0 0 8px var(--a);opacity:0;transform:scaleX(.3);transition:.45s var(--spring)}
 #pin.on::after{opacity:1;transform:none}#pin .i{transition:transform .5s var(--spring),fill .25s}#pin.on .i{transform:rotate(-28deg);fill:color-mix(in srgb,var(--a) 30%,transparent)}
 input[type=checkbox]:checked::after{background:radial-gradient(circle,rgba(12,13,14,.8) 0 2px,#fff 2.6px)}
 input[type=checkbox]:active::after{width:18px}input[type=checkbox]:checked:active::after{transform:translateX(10px)}
 #restore{display:none}
+</style>
+<style id="glcss">
+/* ================= v4.0 Liquid Glass ================= */
+:root{--muted:#a6abb3;--dim:#7f8590;--gl-t:.55;--gl-blur:27px;--gl-a:.82;--base:10,12,14;
+ --gl-tint:rgba(20,23,28,calc(.66 - var(--gl-t)*.34));--gl-well:rgba(0,0,0,.25);--gl-well2:rgba(255,255,255,.05);
+ --gl-edge:rgba(255,255,255,.12);--gl-hi:rgba(255,255,255,.34);--gl-lo:rgba(255,255,255,.05);--gl-spec:rgba(255,255,255,.09);
+ --gl-sh:0 26px 60px -18px rgba(0,0,0,.65),0 5px 16px rgba(0,0,0,.30);--jelly:cubic-bezier(.34,1.56,.64,1)}
+body.light{--base:233,236,243;--gl-tint:rgba(255,255,255,calc(.78 - var(--gl-t)*.38));--gl-well:rgba(40,52,90,.07);--gl-well2:rgba(255,255,255,.55);
+ --gl-edge:rgba(255,255,255,.85);--gl-hi:rgba(255,255,255,1);--gl-lo:rgba(255,255,255,.6);--gl-spec:rgba(255,255,255,.8);
+ --gl-sh:0 24px 50px -20px rgba(50,64,110,.38),0 3px 12px rgba(50,64,110,.10)}
+body{background:rgba(var(--base),var(--gl-a))}
+#lq{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:0;transition:opacity 1.2s ease}#lq.on{opacity:1}
+body.nofluid #lq{display:none}
+
+/* ---- panels ---- */
+.card,#dd,#toast,#floatChart{
+ background:radial-gradient(520px circle at var(--mx,72%) var(--my,-12%),var(--gl-spec),transparent 62%),linear-gradient(152deg,rgba(255,255,255,.085),rgba(255,255,255,.012) 44%,rgba(255,255,255,.04)),var(--gl-tint);
+ -webkit-backdrop-filter:blur(var(--gl-blur)) saturate(175%) brightness(1.06);backdrop-filter:blur(var(--gl-blur)) saturate(175%) brightness(1.06);
+ border:1px solid var(--gl-edge);
+ box-shadow:inset 0 1px 0 var(--gl-hi),inset 0 -1px 0 var(--gl-lo),inset 0 0 44px rgba(255,255,255,.035),var(--gl-sh)}
+body.light .card,body.light #dd,body.light #toast,body.light #floatChart{background:radial-gradient(520px circle at var(--mx,72%) var(--my,-12%),var(--gl-spec),transparent 62%),linear-gradient(152deg,rgba(255,255,255,.55),rgba(255,255,255,.1) 46%,rgba(255,255,255,.3)),var(--gl-tint)}
+#lw,#det{position:relative}
+#dd{background-color:rgba(18,20,24,.72);-webkit-backdrop-filter:blur(34px) saturate(180%);backdrop-filter:blur(34px) saturate(180%)}
+body.light #dd{background-color:rgba(255,255,255,.7)}
+#dd div:hover,#dd .on{background:var(--gl-well2);box-shadow:inset 0 1px 0 var(--gl-hi)}
+#floatChart{opacity:.9;box-shadow:inset 0 1px 0 var(--gl-hi),0 8px 22px -8px rgba(0,0,0,.5)}
+
+/* flashlight rim: border lights up near the pointer */
+#lw::after,#det::after,#pop::after,#dd::after,#toast::after,#tabs::after,#rg::after,#tl::after,.seg::after,.gb::after,.sec::after,.pri::after,#floatChart::after,.tickitem::after,#sw::after,#st::after,.pn::after{
+ content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;z-index:5;
+ background:radial-gradient(150px circle at var(--mx,-999px) var(--my,-999px),rgba(255,255,255,.85),rgba(255,255,255,0) 72%);
+ -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+body.light #lw::after,body.light #det::after,body.light #pop::after,body.light .pn::after{background:radial-gradient(150px circle at var(--mx,-999px) var(--my,-999px),rgba(80,110,200,.55),rgba(80,110,200,0) 72%)}
+.gb,.sec,.pri,.tickitem,#sw,#st,.pn{position:relative}
+#sw::after{inset:0;border-radius:10px;top:0;height:34px}
+
+/* ---- wells (carved glass) ---- */
+.inset,.pn,#list{background:var(--gl-well);border:1px solid rgba(255,255,255,.07);box-shadow:inset 0 2px 12px rgba(0,0,0,.3),inset 0 -1px 0 rgba(255,255,255,.05)}
+body.light .inset,body.light .pn,body.light #list{border-color:rgba(255,255,255,.7);box-shadow:inset 0 2px 10px rgba(50,64,110,.10),inset 0 -1px 0 rgba(255,255,255,.9)}
+.inset{position:relative;overflow:hidden;isolation:isolate}
+.inset::before{content:"";position:absolute;z-index:0;width:460px;height:460px;right:-170px;top:-250px;border-radius:50%;pointer-events:none;
+ background:radial-gradient(circle,color-mix(in srgb,var(--a) 26%,transparent),transparent 66%);animation:blobA 15s ease-in-out infinite alternate}
+.inset::after{content:"";position:absolute;z-index:0;width:380px;height:380px;left:-160px;bottom:-230px;border-radius:50%;pointer-events:none;
+ background:radial-gradient(circle,rgba(120,150,255,.14),transparent 66%);animation:blobB 19s ease-in-out infinite alternate}
+.inset>*{position:relative;z-index:1}
+@keyframes blobA{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-90px,70px) scale(1.15,.9)}100%{transform:translate(-30px,150px) scale(.92,1.12)}}
+@keyframes blobB{0%{transform:translate(0,0) scale(1)}100%{transform:translate(160px,-70px) scale(1.2,.85)}}
+#cw{background-color:rgba(0,0,0,.2);border-color:rgba(255,255,255,.08);box-shadow:inset 0 2px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.04)}
+body.light #cw{background-color:rgba(255,255,255,.35);border-color:rgba(255,255,255,.8);box-shadow:inset 0 2px 10px rgba(50,64,110,.1)}
+#st{background:rgba(255,255,255,.07)}#st div{background:rgba(255,255,255,.035)!important}#st div:hover{background:rgba(255,255,255,.09)!important}
+body.light #st{background:rgba(255,255,255,.7)}body.light #st div{background:rgba(255,255,255,.45)!important}
+#st::after{border-radius:12px}
+#list{padding:6px}
+
+/* ---- capsules, tabs, segmented ---- */
+#tabs,#rg,#tl,.seg{background:var(--gl-well);border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 2px 8px rgba(0,0,0,.3),inset 0 -1px 0 rgba(255,255,255,.05)}
+body.light #tabs,body.light #rg,body.light #tl,body.light .seg{border-color:rgba(255,255,255,.8);box-shadow:inset 0 2px 8px rgba(50,64,110,.1)}
+#tl .on{background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 4px 10px -3px rgba(0,0,0,.4)!important}
+.tabink,.ind{z-index:2;transition:none!important;border-radius:9px;
+ background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.05) 60%,rgba(255,255,255,.1));
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -1px 0 rgba(255,255,255,.14),inset 0 0 14px rgba(255,255,255,.08),0 7px 16px -5px rgba(0,0,0,.55),0 0 0 .5px rgba(255,255,255,.18);
+ -webkit-backdrop-filter:blur(.4px) url(#lens-wide) saturate(1.7) brightness(1.14);backdrop-filter:blur(.4px) url(#lens-wide) saturate(1.7) brightness(1.14);will-change:transform,width}
+body.light .tabink,body.light .ind{background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.4));box-shadow:inset 0 1px 0 #fff,0 7px 16px -6px rgba(50,64,110,.4),0 0 0 .5px rgba(255,255,255,.9)}
+.seg .ind{background:linear-gradient(180deg,color-mix(in srgb,var(--a) 34%,rgba(255,255,255,.22)),color-mix(in srgb,var(--a) 14%,rgba(255,255,255,.05)));box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 0 14px color-mix(in srgb,var(--a) 28%,transparent),0 7px 16px -5px rgba(0,0,0,.55),0 0 0 .5px color-mix(in srgb,var(--a) 50%,transparent)}
+.seg .on{color:var(--ink)!important}
+.tab.active{color:var(--ink)}
+.tab.active::before{box-shadow:0 0 10px var(--a),0 0 2px #fff}
+
+/* ---- rows ---- */
+.row:hover{background:var(--gl-well2)}
+.row.sel{background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.04))!important;border-color:rgba(255,255,255,.15);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 10px 22px -12px rgba(0,0,0,.7)}
+body.light .row.sel{background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.5))!important;border-color:#fff;box-shadow:inset 0 1px 0 #fff,0 10px 22px -12px rgba(50,64,110,.4)}
+.company-logo{box-shadow:0 2px 8px -2px rgba(0,0,0,.5),inset 0 1px 0 #fff}
+.logo-fallback{background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.05));box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.tickitem{background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border-color:var(--gl-edge);box-shadow:inset 0 1px 0 var(--gl-hi),0 8px 18px -10px rgba(0,0,0,.6);-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%)}
+.tickitem:hover{transform:translateY(-3px) scale(1.02)}
+.chip{background:var(--gl-well2);box-shadow:inset 0 1px 0 var(--gl-hi)}
+
+/* ---- buttons ---- */
+.pri{background:linear-gradient(180deg,#fff,rgba(255,255,255,.74));color:#0b0c0d;overflow:hidden;
+ box-shadow:inset 0 1px 0 #fff,inset 0 -3px 7px rgba(0,0,0,.14),0 8px 20px -6px color-mix(in srgb,var(--a) 60%,transparent),0 1px 3px rgba(0,0,0,.45)}
+body.light .pri{background:linear-gradient(180deg,#2a2d33,#0f1114);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 8px 18px -6px rgba(20,30,60,.5)}
+.pri:hover{filter:none;transform:translateY(-1px) scale(1.03);box-shadow:inset 0 1px 0 #fff,inset 0 -3px 7px rgba(0,0,0,.14),0 12px 26px -6px color-mix(in srgb,var(--a) 75%,transparent),0 1px 3px rgba(0,0,0,.45)}
+.pri:active,.sec:active,.gb:active{transform:scale(.93,.9)}
+.sec,.gb{background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.035));border:1px solid var(--gl-edge);overflow:hidden;box-shadow:inset 0 1px 0 var(--gl-hi),0 6px 14px -8px rgba(0,0,0,.6);-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%)}
+.sec:hover,.gb:hover{background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.06))}
+body.light .sec,body.light .gb{background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.4))}
+.ib{overflow:hidden;position:relative}.ib:hover{background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.05));box-shadow:inset 0 1px 0 var(--gl-hi),0 6px 12px -6px rgba(0,0,0,.5);transform:translateY(-1px)}
+.ib:active{transform:scale(.88)}
+.ib.on{background:color-mix(in srgb,var(--a) 16%,transparent);box-shadow:inset 0 1px 0 color-mix(in srgb,var(--a) 50%,#fff 20%),0 0 16px -4px var(--a)}
+#cl:hover{background:linear-gradient(180deg,#f0646a,#e5484d)}
+.rpl{position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.5),rgba(255,255,255,0) 68%);transform:translate(-50%,-50%) scale(0);z-index:0}
+
+/* ---- inputs ---- */
+#q,.pn input,.pn select,#converter input,#converter select,.tab input{background:rgba(0,0,0,.26);border-color:rgba(255,255,255,.1);box-shadow:inset 0 2px 6px rgba(0,0,0,.3),inset 0 -1px 0 rgba(255,255,255,.05);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+body.light #q,body.light .pn input,body.light .pn select,body.light #converter input,body.light #converter select{background:rgba(255,255,255,.55);border-color:rgba(255,255,255,.9);box-shadow:inset 0 2px 6px rgba(50,64,110,.1)}
+#q:focus,.pn input:focus,.pn select:focus,#converter input:focus{box-shadow:inset 0 2px 6px rgba(0,0,0,.3),0 0 0 3px color-mix(in srgb,var(--a) 16%,transparent),0 0 24px -2px color-mix(in srgb,var(--a) 45%,transparent)}
+.stp{background:rgba(0,0,0,.24);border-color:rgba(255,255,255,.1);box-shadow:inset 0 2px 6px rgba(0,0,0,.3)}
+.stp button:hover{background:rgba(255,255,255,.1)}
+select option{background:#16181b;color:#ececee}
+body.light select option{background:#fff;color:#18191b}
+
+/* ---- toggles ---- */
+input[type=checkbox]{width:44px;height:26px;background:var(--gl-well);border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 2px 6px rgba(0,0,0,.45),inset 0 -1px 0 rgba(255,255,255,.06);transition:background .35s,box-shadow .4s,border-color .3s}
+input[type=checkbox]::after{left:2px;top:2px;width:20px;height:20px;background:radial-gradient(circle at 32% 24%,#fff,rgba(255,255,255,.82) 46%,rgba(255,255,255,.55));
+ box-shadow:inset 0 1px 1px #fff,inset 0 -2px 3px rgba(0,0,0,.12),0 4px 9px rgba(0,0,0,.5),0 0 0 .5px rgba(255,255,255,.5);transition:transform .6s var(--jelly),width .35s var(--jelly),background .2s}
+input[type=checkbox]:checked{background:linear-gradient(180deg,color-mix(in srgb,var(--a) 100%,#fff 18%),var(--a));border-color:color-mix(in srgb,var(--a) 70%,#fff);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 5px rgba(0,0,0,.18),0 0 20px -2px color-mix(in srgb,var(--a) 65%,transparent)}
+input[type=checkbox]:checked::after{transform:translateX(18px);background:radial-gradient(circle at 32% 24%,#fff,rgba(255,255,255,.92) 55%,rgba(255,255,255,.7))}
+input[type=checkbox]:active::after{width:27px}input[type=checkbox]:checked:active::after{transform:translateX(11px)}
+
+/* ---- liquid slider ---- */
+.lqs{position:relative;display:inline-block;width:124px;height:32px;flex:none;vertical-align:middle;-webkit-tap-highlight-color:transparent}
+.pn .lqs{flex:1;min-width:110px;width:auto}
+.lqs .pxs{position:absolute;inset:0;width:100%;height:100%;min-width:0;margin:0;opacity:0;z-index:4;cursor:pointer}
+.lqs .pxs::-webkit-slider-runnable-track{height:32px;background:none}
+.lqs .pxs::-webkit-slider-thumb{-webkit-appearance:none;width:46px;height:32px;margin-top:0;background:transparent;box-shadow:none;border:0}
+.lqs .pxs:hover::-webkit-slider-thumb,.lqs .pxs:active::-webkit-slider-thumb{transform:none}
+.lqg{position:absolute;left:0;right:0;top:50%;height:11px;margin-top:-5.5px;border-radius:99px;background:var(--gl-well);border:1px solid rgba(255,255,255,.08);
+ box-shadow:inset 0 2px 5px rgba(0,0,0,.55),inset 0 -1px 0 rgba(255,255,255,.07),0 1px 0 rgba(255,255,255,.05)}
+body.light .lqg{border-color:rgba(255,255,255,.9);box-shadow:inset 0 2px 5px rgba(50,64,110,.2),0 1px 0 #fff}
+.lqgoo{position:absolute;left:0;top:0;right:0;bottom:0;filter:url(#goo) drop-shadow(0 0 7px color-mix(in srgb,var(--a) 55%,transparent));pointer-events:none;z-index:1}
+.lqf{position:absolute;left:1px;top:50%;height:9px;margin-top:-4.5px;width:0;border-radius:99px;background:linear-gradient(180deg,color-mix(in srgb,var(--a) 60%,#fff),var(--a) 50%,color-mix(in srgb,var(--a) 88%,#000))}
+.lqb{position:absolute;left:0;top:50%;width:19px;height:19px;margin-top:-9.5px;border-radius:50%;background:radial-gradient(circle at 40% 30%,color-mix(in srgb,var(--a) 60%,#fff),var(--a) 62%)}
+.lqk{position:absolute;left:0;top:50%;width:46px;height:28px;margin-top:-14px;border-radius:99px;z-index:3;pointer-events:none;will-change:transform;
+ background:linear-gradient(180deg,rgba(255,255,255,.36),rgba(255,255,255,.07) 52%,rgba(255,255,255,.16));
+ box-shadow:inset 0 1.5px 1px rgba(255,255,255,.95),inset 0 -2px 5px rgba(255,255,255,.28),inset 0 0 0 .5px rgba(255,255,255,.45),inset 0 0 14px rgba(255,255,255,.1),0 8px 16px -3px rgba(0,0,0,.55),0 1px 3px rgba(0,0,0,.45);
+ -webkit-backdrop-filter:blur(.5px) url(#lens-knob) saturate(2) brightness(1.12);backdrop-filter:blur(.5px) url(#lens-knob) saturate(2) brightness(1.12)}
+.lqk::before{content:"";position:absolute;left:12%;right:12%;top:2px;height:9px;border-radius:99px;background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(255,255,255,0))}
+.lqk::after{content:"";position:absolute;left:14%;right:14%;bottom:1px;height:12px;border-radius:99px;background:radial-gradient(ellipse at 50% 100%,color-mix(in srgb,var(--a) 85%,transparent),transparent 70%);opacity:.75;mix-blend-mode:screen}
+body.light .lqk{background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.5));box-shadow:inset 0 1.5px 1px #fff,0 8px 16px -4px rgba(50,64,110,.45),0 0 0 .5px rgba(255,255,255,.9)}
+.lqs.foc .lqk{outline:2px solid color-mix(in srgb,var(--a) 70%,transparent);outline-offset:2px}
+.sl output{text-shadow:0 0 10px color-mix(in srgb,var(--a) 70%,transparent)}
+
+/* ---- measuring bars: glass beads ---- */
+.rt{background:none!important}
+.rt::before{content:"";position:absolute;inset:0;border-radius:2px;background:linear-gradient(90deg,var(--a) var(--p),rgba(255,255,255,.13) var(--p));
+ -webkit-mask:repeating-linear-gradient(90deg,#000 0 3px,transparent 3px 5px);mask:repeating-linear-gradient(90deg,#000 0 3px,transparent 3px 5px);filter:drop-shadow(0 0 6px color-mix(in srgb,var(--a) 50%,transparent))}
+.hist u::after,.rt i::after{width:14px;height:14px;margin-left:-7px;background:radial-gradient(circle at 35% 28%,#fff,color-mix(in srgb,var(--a) 70%,#fff) 40%,var(--a));box-shadow:0 0 0 2px rgba(255,255,255,.25),0 3px 10px color-mix(in srgb,var(--a) 70%,transparent),inset 0 -2px 3px rgba(0,0,0,.2)}
+.hist i{background:rgba(255,255,255,.13)}.hist i.hot{background:linear-gradient(180deg,color-mix(in srgb,var(--a) 70%,#fff),var(--a));box-shadow:0 0 10px -2px var(--a)}
+.bb i{background:rgba(255,255,255,.1)}
+body.light .hist i{background:rgba(40,52,90,.12)}
+
+/* ---- popover, toast, footer, scrollbars ---- */
+#pop{transform-origin:top right;transition:opacity .25s,transform .65s var(--jelly)}
+#pop:not(.open){transform:translateY(-14px) scale(.9,.84)}
+#pop.open{box-shadow:inset 0 1px 0 var(--gl-hi),inset 0 -1px 0 var(--gl-lo),0 40px 80px -20px rgba(0,0,0,.7),0 6px 20px rgba(0,0,0,.35)}
+.pr2{border-top-color:rgba(255,255,255,.07)}
+.kh{border-top-color:rgba(255,255,255,.07)}
+#toast{border-radius:99px;padding:9px 18px;transition:opacity .25s,transform .7s var(--jelly)}
+#toast:not(.on){transform:translate(-50%,24px) scale(.8,.7)}
+#ft{background:rgba(0,0,0,.18);border-top-color:rgba(255,255,255,.08);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%)}
+body.light #ft{background:rgba(255,255,255,.4);border-top-color:rgba(255,255,255,.8)}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.1);border-radius:6px}::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.28)}
+.mark{filter:drop-shadow(0 0 12px color-mix(in srgb,var(--a) 60%,transparent)) drop-shadow(0 4px 8px rgba(0,0,0,.4))}
+.logo em{background:var(--gl-well2);box-shadow:inset 0 1px 0 var(--gl-hi)}
+#px{text-shadow:0 0 36px color-mix(in srgb,var(--a) 24%,transparent)}
+#chg span{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 6px 14px -8px currentColor;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#det{padding:0!important;overflow:hidden!important;gap:0!important}
+#detin{flex:1;min-height:0;overflow:auto;padding:6px;display:flex;flex-direction:column;gap:6px}
+#sp::after{box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 12px -2px color-mix(in srgb,var(--a) 0%,transparent)}
+#sp:hover::after,#sp.d::after{box-shadow:0 0 14px var(--a)}
+@media(max-height:640px){.pr2{padding:7px 14px}.kh{padding:6px 14px 4px}}
+
+/* ---- theme switch: liquid circular reveal ---- */
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+::view-transition-new(root){clip-path:circle(0px at var(--vx,50%) var(--vy,0));animation:vtReveal .85s cubic-bezier(.25,1.12,.4,1) forwards}
+@keyframes vtReveal{to{clip-path:circle(var(--vr,1800px) at var(--vx,50%) var(--vy,0))}}
+@media(prefers-reduced-motion:reduce){.inset::before,.inset::after{animation:none}}
+
+/* ---- contrast on glass ---- */
+.gb{color:#c8ccd2}.gb:hover{color:#fff}
+body.light .gb{color:#3a3e45}body.light .gb:hover{color:#000}
+.pr2 select{height:30px;padding:0 26px 0 11px;border-radius:9px;border:1px solid var(--gl-edge);background-color:rgba(0,0,0,.28);color:var(--ink);font:500 11.5px var(--mono);outline:0;cursor:pointer;box-shadow:inset 0 2px 6px rgba(0,0,0,.3),inset 0 -1px 0 rgba(255,255,255,.05)}
+body.light .pr2 select{background-color:rgba(255,255,255,.6);border-color:#fff;box-shadow:inset 0 2px 6px rgba(50,64,110,.12)}
+.pr2 select:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 16%,transparent),0 0 22px -2px color-mix(in srgb,var(--a) 45%,transparent)}
+.ch small,.nm small,.nmt small{color:var(--dim)}
+#pop{background-color:rgba(17,20,24,.8)}
+body.light #pop{background-color:rgba(255,255,255,.78)}
+body.light .tabink,body.light .ind{background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.18));-webkit-backdrop-filter:blur(.4px) url(#lens-wide) saturate(1.4) brightness(1.04);backdrop-filter:blur(.4px) url(#lens-wide) saturate(1.4) brightness(1.04)}
+body.light .seg .ind{background:linear-gradient(180deg,color-mix(in srgb,var(--a) 30%,rgba(255,255,255,.5)),color-mix(in srgb,var(--a) 12%,rgba(255,255,255,.2)))}
+body.light .bb i:not(.g):not(.r){background:rgba(40,52,90,.12)}
+body.light .bb i.g{background:var(--g)}body.light .bb i.r{background:var(--r)}
 </style></head><body>
+<canvas id="lq" aria-hidden="true"></canvas>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="lq-defs"><filter id="goo" x="-5%" y="-45%" width="110%" height="190%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -10"/></filter></defs></svg>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></symbol>
 <symbol id="i-sort" viewBox="0 0 24 24"><path d="M7 4v16m0 0-3-3m3 3 3-3M17 20V4m0 0-3 3m3-3 3 3"/></symbol>
 <symbol id="i-theme" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></symbol>
+<symbol id="i-glass" viewBox="0 0 24 24"><path d="M12 3.2c3.5 4.1 6 7.2 6 10.2a6 6 0 0 1-12 0c0-3 2.5-6.1 6-10.2z"/><path d="M9.3 13.6c.15 2 1.5 3.4 3.3 3.7"/></symbol>
+<symbol id="i-carbon" viewBox="0 0 24 24"><rect x="3.6" y="3.6" width="6.8" height="6.8" rx="2"/><rect x="13.6" y="3.6" width="6.8" height="6.8" rx="2"/><rect x="3.6" y="13.6" width="6.8" height="6.8" rx="2"/><rect x="13.6" y="13.6" width="6.8" height="6.8" rx="2"/></symbol>
 <symbol id="i-prefs" viewBox="0 0 24 24"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.2"/><circle cx="8" cy="17" r="2.2"/></symbol>
 <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 16.5V22M8 3h8l-1 6 3 3.2V14H6v-1.8L9 9z"/></symbol>
 <symbol id="i-island" viewBox="0 0 24 24"><rect x="3" y="9.5" width="18" height="5" rx="2.5"/></symbol>
@@ -261,10 +456,11 @@ input[type=checkbox]:active::after{width:18px}input[type=checkbox]:checked:activ
 <symbol id="i-restore" viewBox="0 0 24 24"><rect x="8.5" y="5" width="10.5" height="10.5" rx="2.5"/><path d="M5 9v7.5A2.5 2.5 0 0 0 7.5 19H15"/></symbol>
 <symbol id="i-tone" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="9.5" r="1"/><circle cx="14.5" cy="8.5" r="1"/><circle cx="16" cy="13.5" r="1"/></symbol>
 </defs></svg>
-<div id="tb"><span class="logo"><svg class="mark" viewBox="0 0 24 24"><rect width="24" height="24" rx="7" fill="var(--a)"/><path d="m5.5 15.5 4-4.2 3 3 5.5-6.6" stroke="#06140d" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Glass Ticker<em>v3.7</em></span>
+<div id="tb"><span class="logo"><svg class="mark" viewBox="0 0 24 24"><rect width="24" height="24" rx="7" fill="var(--a)"/><path d="m5.5 15.5 4-4.2 3 3 5.5-6.6" stroke="#06140d" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Glass Ticker<em>v3.0</em></span>
 <div id="sw"><svg class="i"><use href="#i-search"/></svg><input id="q" placeholder="Search symbol or company" autocomplete="off"><kbd>Ctrl K</kbd><div id="dd"></div></div>
 <div class="sp"></div>
 <button class="ib" id="so" title="Sort: custom"><svg class="i"><use href="#i-sort"/></svg></button>
+<button class="ib" id="style" title="Style: Liquid Glass"><svg class="i"><use href="#i-glass"/></svg></button>
 <button class="ib" id="theme" title="Toggle light / dark"><svg class="i"><use href="#i-theme"/></svg></button>
 <button class="ib" id="cfg" title="Preferences"><svg class="i"><use href="#i-prefs"/></svg></button><span class="vr"></span>
 <button class="ib" id="pin" title="Keep window on top"><svg class="i"><use href="#i-pin"/></svg></button>
@@ -272,8 +468,11 @@ input[type=checkbox]:active::after{width:18px}input[type=checkbox]:checked:activ
 <button class="ib" id="max" title="Maximize / restore"><svg class="i"><use href="#i-max"/></svg></button>
 <button class="ib" id="cl" title="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
 <div id="pop" class="card"><div class="ch"><span class="ico"><svg class="i"><use href="#i-prefs"/></svg></span><div><b>Preferences</b><small>refresh · window · look · data</small></div></div>
+<div class="pr2"><div><b>Style</b><small>liquid glass or flat carbon</small></div><div class="seg" id="stlseg"><button data-v="glass">Glass</button><button data-v="carbon">Carbon</button></div></div>
 <div class="pr2"><div><b>Refresh</b><small>poll interval</small></div><div class="seg" id="ivseg"><button data-v="5">5s</button><button data-v="10">10s</button><button data-v="30">30s</button><button data-v="60">60s</button></div></div>
 <div class="pr2"><div><b>Opacity</b><small>window · 45–100</small></div><div class="sl"><input id="op" class="pxs" type="range" min="45" max="100" value="100"><output id="opv">100%</output></div></div>
+<div class="pr2" id="glassrow"><div><b>Glass</b><small>frost · tint</small></div><div class="sl"><input id="gls" class="pxs" type="range" min="0" max="100" value="55"><output id="glv">55%</output></div></div>
+<label class="pr2" id="lightrow"><div><b>Liquid light</b><small>animated fluid backdrop</small></div><input type="checkbox" id="flu" checked></label>
 <div class="pr2"><div><b>Currency</b><small>display prices in</small></div><select id="dispcur"><option value="">Native</option><option>INR</option><option>USD</option><option>EUR</option><option>GBP</option><option>JPY</option><option>AUD</option><option>CAD</option><option>SGD</option><option>AED</option></select></div>
 <div class="pr2"><div><b>Accent</b><small>signal colour</small></div><div id="sws"><button data-c="#5eeaa8" style="--c:#5eeaa8"></button><button data-c="#6aa8ff" style="--c:#6aa8ff"></button><button data-c="#b79bff" style="--c:#b79bff"></button><button data-c="#ffc15e" style="--c:#ffc15e"></button><button data-c="#ff7a8c" style="--c:#ff7a8c"></button><input type="color" id="ac"></div></div>
 <label class="pr2"><div><b>Start with Windows</b><small>launch at login</small></div><input type="checkbox" id="au"></label>
@@ -285,20 +484,273 @@ input[type=checkbox]:active::after{width:18px}input[type=checkbox]:checked:activ
 <div id="main"><div id="lw" class="card"><div class="ch"><span class="ico"><svg class="i"><use href="#i-list"/></svg></span><div><b>Watchlist</b><small id="lsub">—</small></div></div><div id="list" aria-label="Stock watchlist"></div>
 <div id="brd"><div class="bb" id="bbar"></div><div class="lg"><span><i class="g"></i>Advancing</span><b id="bup">0</b></div><div class="lg"><span><i class="r"></i>Declining</span><b id="bdn">0</b></div><div class="lg"><span><i class="n"></i>Avg move</span><b id="bavg">—</b></div></div></div>
 <div id="sp" title="Drag to resize, double click to hide chart"></div>
-<div id="det" class="card" aria-label="Market detail workspace"><div class="ch" id="hd"><div id="nm">&nbsp;</div><div id="chg"></div></div>
+<div id="det" class="card" aria-label="Market detail workspace"><div id="detin"><div class="ch" id="hd"><div id="nm">&nbsp;</div><div id="chg"></div></div>
 <div class="inset"><div id="px">...</div>
 <div class="bar"><div id="rg"></div><div id="tl"><button id="ty" title="Candles / area"><svg class="i"><use href="#i-candles"/></svg>Candles</button><button id="sm" title="20-period moving average"><svg class="i"><use href="#i-sma"/></svg>SMA</button><button id="nb"><svg class="i"><use href="#i-news"/></svg>News</button></div></div>
 <div id="cw"><canvas id="cv"></canvas><i id="lp"></i><div id="nw"></div><button id="floatChart" title="Drag this handle onto your desktop to pin this chart"></button></div><div id="rms"></div><div id="st"></div></div>
 <div id="ar" class="pn"><span class="lab"><span class="ico"><svg class="i"><use href="#i-bell"/></svg></span>Alert</span><select id="alertmode"><option value="price">Price target</option><option value="percent">% move</option></select><input id="al" type="number" step="any" placeholder="Price"><input id="alsl" class="pxs" type="range" min="0" max="100" step="1" value="50"><input id="pctalert" type="number" step="any" placeholder="± %" style="display:none"><select id="alertdir" style="display:none"><option value="up">Rises by</option><option value="down">Falls by</option><option value="any">Moves ±</option></select><button id="as" class="pri">Set alert</button><span id="at"></span></div>
-<div id="ps" class="pn"><span class="lab"><span class="ico"><svg class="i"><use href="#i-wallet"/></svg></span>Position</span><div class="stp"><button data-d="-1" title="Less">−</button><input id="pq" type="number" step="any" placeholder="Qty"><button data-d="1" title="More">+</button></div><span class="at-sep">@</span><input id="pc" type="number" step="any" placeholder="Avg cost"><button id="pv" class="pri">Save</button><span id="pt"></span></div></div></div>
+<div id="ps" class="pn"><span class="lab"><span class="ico"><svg class="i"><use href="#i-wallet"/></svg></span>Position</span><div class="stp"><button data-d="-1" title="Less">−</button><input id="pq" type="number" step="any" placeholder="Qty"><button data-d="1" title="More">+</button></div><span class="at-sep">@</span><input id="pc" type="number" step="any" placeholder="Avg cost"><button id="pv" class="pri">Save</button><span id="pt"></span></div></div></div></div>
 <div id="ft"><span id="upd">Loading…</span><span id="pf"></span><div id="converter"><svg class="i"><use href="#i-convert"/></svg><input id="convertamount" type="number" value="1" min="0" step="any"><span id="fromcur">—</span><span>→</span><select id="tocur"><option>INR</option><option>USD</option><option>EUR</option><option>GBP</option><option>JPY</option></select><span id="convertresult">—</span></div></div>
 <div id="toast"></div>
+<script>
+/* ================= Glass Ticker v4.0 : Liquid Glass engine ================= */
+(function(){
+'use strict';
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const $=s=>document.querySelector(s);
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const isGlass=()=>document.body.classList.contains('gl');
+let ST={},saveFn=()=>{},drawFn=()=>{};
+
+/* ---------- 1. refraction lens maps (SVG displacement) ---------- */function lensMap(w,h,r,bez,mag){
+ const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d'),im=x.createImageData(w,h),d=im.data,cx=w/2,cy=h/2;
+ for(let j=0;j<h;j++)for(let i=0;i<w;i++){
+  const px=i+.5-cx,py=j+.5-cy,qx=Math.abs(px)-(w/2-r),qy=Math.abs(py)-(h/2-r),ox=Math.max(qx,0),oy=Math.max(qy,0);
+  const out=Math.hypot(ox,oy)+Math.min(Math.max(qx,qy),0)-r,dist=-out;let nx=0,ny=0;
+  if(ox>0||oy>0){const L=Math.hypot(ox,oy)||1;nx=Math.sign(px)*ox/L;ny=Math.sign(py)*oy/L}else if(qx>qy){nx=Math.sign(px)||1}else{ny=Math.sign(py)||1}
+  const u=clamp(dist/bez,0,1),rim=Math.pow(1-u,2.2);
+  let dx=nx*rim-(px/(w/2))*mag,dy=ny*rim-(py/(h/2))*mag;
+  dx=clamp(dx,-1,1);dy=clamp(dy,-1,1);const k=(j*w+i)*4;d[k]=128+127*dx;d[k+1]=128+127*dy;d[k+2]=128;d[k+3]=255}
+ x.putImageData(im,0,0);return c.toDataURL();
+}
+function addFilter(defs,id,w,h,r,bez,mag,scale,units,chroma){
+ const url=lensMap(w*2,h*2,r*2,bez*2,mag),W=units?1:w,H=units?1:h;
+ const reg=units?'':'filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse"';
+ const pu=units?'primitiveUnits="objectBoundingBox"':'';
+ const dm=(s,res)=>`<feDisplacementMap in="SourceGraphic" in2="m" scale="${s}" xChannelSelector="R" yChannelSelector="G" result="${res}"/>`;
+ const body=chroma?
+  dm(scale*1.1,'d1')+dm(scale,'d0')+dm(scale*.9,'d2')+
+  '<feColorMatrix in="d1" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="r"/>'+
+  '<feColorMatrix in="d0" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="g"/>'+
+  '<feColorMatrix in="d2" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="b"/>'+
+  '<feBlend in="r" in2="g" mode="screen" result="rg"/><feBlend in="rg" in2="b" mode="screen"/>'
+  :dm(scale,'o');
+ defs.insertAdjacentHTML('beforeend',`<filter id="${id}" x="0" y="0" width="${W}" height="${H}" ${reg} ${pu} color-interpolation-filters="sRGB">`+
+  `<feFlood flood-color="rgb(128,128,128)" result="n"/><feImage href="${url}" x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="none" result="i"/>`+
+  `<feMerge result="m"><feMergeNode in="n"/><feMergeNode in="i"/></feMerge>${body}</filter>`);
+}
+function buildFilters(){
+ const defs=document.getElementById('lq-defs');if(!defs||defs.dataset.done)return;defs.dataset.done=1;
+ try{addFilter(defs,'lens-knob',46,28,14,11,.2,15,false,true);addFilter(defs,'lens-wide',160,40,12,12,.05,.2,true,false)}catch(e){}
+}
+
+/* ---------- 2. spring engine (indicators + sliders) ---------- */
+const Sp=new Map(),Sliders=new Set();let raf=0,last=0;
+function wake(){if(!raf){last=performance.now();raf=requestAnimationFrame(frame)}}
+function paintInd(el,s){
+ const sx=clamp(Math.abs(s.vx)/3500,0,.22),sy=clamp(Math.abs(s.vx)/7000,0,.1);
+ el.style.width=s.w.toFixed(2)+'px';el.style.transform=`translateX(${s.x.toFixed(2)}px) scale(${(1+sx).toFixed(3)},${(1-sy).toFixed(3)})`;
+}
+function target(el,x,w){
+ // Carbon keeps its plain transition - the spring belongs to the glass theme.
+ if(!isGlass()){Sp.delete(el);el.style.width=w+'px';el.style.transform=`translateX(${x}px)`;return}
+ let s=Sp.get(el);
+ if(!s||reduce){s={x,w,vx:0,vw:0,tx:x,tw:w};Sp.set(el,s);paintInd(el,s);return}
+ s.tx=x;s.tw=w;wake();
+}
+function frame(now){
+ raf=0;const dt=Math.min(.034,(now-last)/1000||.016);last=now;let busy=false;
+ for(const [el,s] of Sp){
+  if(!el.isConnected){Sp.delete(el);continue}
+  for(let i=0;i<2;i++){const h=dt/2;
+   s.vx+=(-430*(s.x-s.tx)-23*s.vx)*h;s.x+=s.vx*h;
+   s.vw+=(-380*(s.w-s.tw)-21*s.vw)*h;s.w+=s.vw*h}
+  if(Math.abs(s.x-s.tx)<.04&&Math.abs(s.vx)<.8&&Math.abs(s.w-s.tw)<.04&&Math.abs(s.vw)<.8){s.x=s.tx;s.w=s.tw;s.vx=s.vw=0}else busy=true;
+  paintInd(el,s);
+ }
+ for(const sl of Sliders)if(sl.step(dt))busy=true;
+ if(busy)raf=requestAnimationFrame(frame);
+}
+
+/* ---------- 3. liquid slider ---------- */
+const KW=46,BW=19;
+function makeSlider(inp){
+ if(!inp||inp._lq)return;inp._lq=1;
+ const w=document.createElement('span');w.className='lqs';inp.parentNode.insertBefore(w,inp);w.appendChild(inp);
+ w.insertAdjacentHTML('beforeend','<span class="lqg"></span><span class="lqgoo"><i class="lqf"></i><i class="lqb"></i></span><i class="lqk"></i>');
+ const f=w.querySelector('.lqf'),b=w.querySelector('.lqb'),k=w.querySelector('.lqk');
+ const norm=()=>{const mn=+inp.min||0,mx=inp.max===''?100:+inp.max;return mx>mn?clamp((+inp.value-mn)/(mx-mn),0,1):0};
+ const s={inp,p:norm(),v:0,fp:norm(),fv:0,ps:1,pv:0,tp:norm(),press:0,hover:0,W:w.offsetWidth,first:1};
+ new ResizeObserver(()=>{s.W=w.offsetWidth;s.first=1;wake()}).observe(w);
+ s.step=dt=>{
+  s.tp=norm();let busy=false;
+  const kP=s.press?900:520,cP=s.press?44:26,span=Math.max(0,s.W-KW);
+  for(let i=0;i<2;i++){const h=dt/2;
+   s.v+=(-kP*(s.p-s.tp)-cP*s.v)*h;s.p+=s.v*h;
+   s.fv+=(-230*(s.fp-s.p)-15*s.fv)*h;s.fp+=s.fv*h;
+   const tps=s.press?1.3:s.hover?1.08:1;s.pv+=(-520*(s.ps-tps)-22*s.pv)*h;s.ps+=s.pv*h}
+  const tps=s.press?1.3:s.hover?1.08:1;
+  const still=Math.abs(s.p-s.tp)<4e-4&&Math.abs(s.v)<.003&&Math.abs(s.fp-s.p)<4e-4&&Math.abs(s.fv)<.003&&Math.abs(s.ps-tps)<2e-3&&Math.abs(s.pv)<.02;
+  if(still){s.p=s.tp;s.fp=s.tp;s.v=s.fv=0;s.ps=tps;s.pv=0}else busy=true;
+  if(!still||s.first){
+   s.first=0;const x=s.p*span,st=clamp(Math.abs(s.v)*span/2600,0,.32);
+   k.style.transform=`translate3d(${x.toFixed(2)}px,0,0) scale(${(s.ps*(1+st)).toFixed(3)},${(s.ps*(1-st*.55)).toFixed(3)})`;
+   b.style.transform=`translate3d(${(x+KW/2-BW/2).toFixed(2)}px,0,0) scale(${(1+st*.6).toFixed(3)},${(1-st*.35).toFixed(3)})`;
+   f.style.width=Math.max(0,s.fp*span+KW/2-1).toFixed(2)+'px';
+  }
+  return busy;
+ };
+ s.dirty=()=>Math.abs(norm()-s.tp)>1e-6;
+ inp.addEventListener('pointerdown',()=>{s.press=1;wake()});
+ inp.addEventListener('input',wake);
+ inp.addEventListener('focus',()=>{try{if(inp.matches(':focus-visible'))w.classList.add('foc')}catch(e){}});
+ inp.addEventListener('blur',()=>{w.classList.remove('foc');s.press=0;wake()});
+ w.addEventListener('pointerenter',()=>{s.hover=1;wake()});w.addEventListener('pointerleave',()=>{s.hover=0;wake()});
+ Sliders.add(s);wake();
+}
+addEventListener('pointerup',()=>{let any=false;for(const s of Sliders)if(s.press){s.press=0;any=true}if(any)wake()});
+addEventListener('pointercancel',()=>{for(const s of Sliders)s.press=0;wake()});
+setInterval(()=>{for(const s of Sliders)if(s.dirty()){wake();break}},250);
+function unwrapSlider(inp){
+ if(!inp||!inp._lq)return;
+ const w=inp.parentNode;
+ if(w&&w.classList&&w.classList.contains('lqs')){w.parentNode.insertBefore(inp,w);w.remove()}
+ inp._lq=0;
+ for(const s of Sliders)if(s.inp===inp){Sliders.delete(s);break}
+}
+
+/* ---------- 4. fluid light scene (WebGL) ---------- */
+const FS=`#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+uniform vec2 uR;uniform float uT;uniform vec3 uA;uniform vec2 uP;uniform vec2 uV;uniform float uL;
+float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
+float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),f.x),f.y);}
+float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*noise(p);p=p*2.02+vec2(3.1,1.7);a*=.5;}return v;}
+void main(){
+ vec2 uv=gl_FragCoord.xy/uR;float asp=uR.x/uR.y;
+ vec2 p=vec2((uv.x-.5)*asp,uv.y-.5);
+ vec2 pm=vec2((uP.x-.5)*asp,(1.-uP.y)-.5);
+ vec2 d=p-pm;float r2=dot(d,d);float push=exp(-r2*8.);
+ p+=vec2(uV.x*asp,-uV.y)*push*.5;
+ p+=normalize(d+vec2(1e-4))*push*.018*sin(uT*3.-sqrt(r2)*20.);
+ float t=uT*.05;
+ vec2 q=vec2(fbm(p*1.4+vec2(0.,t)),fbm(p*1.4+vec2(5.2,1.3)-t));
+ vec2 r=vec2(fbm(p*1.7+2.2*q+vec2(1.7,9.2)+t*1.4),fbm(p*1.7+2.2*q+vec2(8.3,2.8)-t*1.1));
+ float f=fbm(p*1.5+2.*r);
+ float vein=pow(1.-abs(2.*f-1.),5.);
+ float glow=smoothstep(.28,.85,f);
+ vec3 c2=mix(uA,vec3(.38,.5,1.),.55);vec3 c3=mix(uA,vec3(1.,.55,.8),.45);
+ vec3 col=mix(c2,uA,smoothstep(.2,.8,r.x));col=mix(col,c3,smoothstep(.55,.95,q.y)*.5);
+ float o1=exp(-length(p-vec2(.5*asp,.3))*2.3);
+ float o2=exp(-length(p-vec2(-.45*asp,-.3))*2.7);
+ float a=.11*glow+.15*vein+.2*o1+.15*o2+.05*glow*push;
+ a*=1.-.28*uL;a=clamp(a,0.,.7);
+ col+=(hash(gl_FragCoord.xy+uT)-.5)/200.;
+ gl_FragColor=vec4(col*a,a);
+}`;
+const F={gl:null,on:false,raf:0,last:0,acc:[.37,.92,.66],tacc:[.37,.92,.66],L:0,P:[.7,.3],T:[.7,.3],V:[0,0],act:0,t0:performance.now(),prog:null,u:{}};
+function hex2rgb(h){h=String(h).trim().replace('#','');if(h.length===3)h=h.replace(/./g,'$&$&');const n=parseInt(h,16);return isNaN(n)?[.37,.92,.66]:[(n>>16&255)/255,(n>>8&255)/255,(n&255)/255]}
+function fluidInit(){
+ const cv=document.getElementById('lq');if(!cv)return;
+ const gl=cv.getContext('webgl',{alpha:true,premultipliedAlpha:true,antialias:false,depth:false,stencil:false,powerPreference:'low-power'});
+ if(!gl){cv.remove();return}
+ const sh=(t,src)=>{const s=gl.createShader(t);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){console.warn(gl.getShaderInfoLog(s));return null}return s};
+ const vs=sh(gl.VERTEX_SHADER,'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}'),fs=sh(gl.FRAGMENT_SHADER,FS);
+ if(!vs||!fs){cv.remove();return}
+ const pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);gl.linkProgram(pr);
+ if(!gl.getProgramParameter(pr,gl.LINK_STATUS)){cv.remove();return}
+ gl.useProgram(pr);const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+ const loc=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+ for(const n of['uR','uT','uA','uP','uV','uL'])F.u[n]=gl.getUniformLocation(pr,n);
+ F.gl=gl;F.cv=cv;fluidSize();addEventListener('resize',()=>{fluidSize();if(F.on)fluidDraw(performance.now(),true)});
+ addEventListener('pointermove',e=>{F.T=[e.clientX/innerWidth,e.clientY/innerHeight];F.act=performance.now()},{passive:true});
+}
+function fluidSize(){const cv=F.cv;if(!cv)return;const sc=Math.min(1,.5*(devicePixelRatio||1));const w=Math.max(2,Math.round(innerWidth*sc)),h=Math.max(2,Math.round(innerHeight*sc));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}F.gl&&F.gl.viewport(0,0,w,h)}
+function fluidDraw(now,force){
+ const gl=F.gl;if(!gl)return;
+ const dt=Math.min(.1,(now-F.last)/1000||.016);F.last=now;
+ const ta=hex2rgb(getComputedStyle(document.documentElement).getPropertyValue('--a')||'#5eeaa8');
+ for(let i=0;i<3;i++)F.acc[i]+=(ta[i]-F.acc[i])*Math.min(1,dt*3);
+ F.L+=((document.body.classList.contains('light')?1:0)-F.L)*Math.min(1,dt*4);
+ const px=F.P[0],py=F.P[1];F.P[0]+=(F.T[0]-F.P[0])*Math.min(1,dt*7);F.P[1]+=(F.T[1]-F.P[1])*Math.min(1,dt*7);
+ const vx=(F.P[0]-px)/Math.max(dt,.001),vy=(F.P[1]-py)/Math.max(dt,.001);
+ F.V[0]+=(vx*.06-F.V[0])*Math.min(1,dt*6);F.V[1]+=(vy*.06-F.V[1])*Math.min(1,dt*6);
+ gl.uniform2f(F.u.uR,F.cv.width,F.cv.height);gl.uniform1f(F.u.uT,reduce?4:(now-F.t0)/1000+20);gl.uniform3f(F.u.uA,F.acc[0],F.acc[1],F.acc[2]);
+ gl.uniform2f(F.u.uP,F.P[0],F.P[1]);gl.uniform2f(F.u.uV,clamp(F.V[0],-.5,.5),clamp(F.V[1],-.5,.5));gl.uniform1f(F.u.uL,F.L);
+ gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLES,0,3);
+ if(!F.cv.classList.contains('on'))F.cv.classList.add('on');
+}
+function fluidLoop(now){
+ F.raf=0;if(!F.on)return;
+ const iv=(now-F.act<1800)?30:60;
+ if(!document.hidden&&now-F.last>=iv)fluidDraw(now);
+ F.raf=requestAnimationFrame(fluidLoop);
+}
+function setFluid(on){
+ F.on=!!on&&!!F.gl;document.body.classList.toggle('nofluid',!F.on);
+ if(F.on){if(!F.raf)F.raf=requestAnimationFrame(fluidLoop)}else if(F.raf){cancelAnimationFrame(F.raf);F.raf=0}
+}
+
+/* ---------- 5. pointer lighting + ripples ---------- */
+const GL_SEL='#lw,#det,#pop,#dd,#toast,#tabs,#rg,#tl,.seg,.gb,.sec,.pri,#floatChart,.tickitem,#sw,#st,.pn';
+let lit=new Set(),pe=null,pr=0;
+function light(){
+ pr=0;const e=pe;if(!e||!isGlass())return;const seen=new Set();
+ let el=e.target&&e.target.closest?e.target.closest(GL_SEL):null;
+ while(el){const r=el.getBoundingClientRect();el.style.setProperty('--mx',(e.clientX-r.left).toFixed(1)+'px');el.style.setProperty('--my',(e.clientY-r.top).toFixed(1)+'px');seen.add(el);el=el.parentElement?el.parentElement.closest(GL_SEL):null}
+ for(const o of lit)if(!seen.has(o)){o.style.removeProperty('--mx');o.style.removeProperty('--my')}
+ lit=seen;
+}
+addEventListener('pointermove',e=>{pe=e;if(!pr)pr=requestAnimationFrame(light)},{passive:true});
+document.addEventListener('pointerleave',()=>{for(const o of lit){o.style.removeProperty('--mx');o.style.removeProperty('--my')}lit=new Set()});
+addEventListener('pointerdown',e=>{
+ if(!isGlass())return;
+ const el=e.target.closest&&e.target.closest('.pri,.sec,.gb,.ib');if(!el||reduce||!el.animate)return;
+ const r=el.getBoundingClientRect(),d=Math.max(r.width,r.height)*2.3,i=document.createElement('i');i.className='rpl';
+ i.style.cssText=`left:${e.clientX-r.left}px;top:${e.clientY-r.top}px;width:${d}px;height:${d}px`;el.appendChild(i);
+ i.animate([{transform:'translate(-50%,-50%) scale(0)',opacity:.95},{transform:'translate(-50%,-50%) scale(1)',opacity:0}],{duration:650,easing:'cubic-bezier(.2,.7,.2,1)'}).onfinish=()=>i.remove();
+},true);
+
+/* ---------- 6. liquid theme reveal ---------- */
+function vt(fn,ev){
+ if(reduce||!document.startViewTransition){fn();return false}
+ const r=document.documentElement.style,x=ev&&ev.clientX!=null?ev.clientX:innerWidth-90,y=ev&&ev.clientY!=null?ev.clientY:26;
+ r.setProperty('--vx',x+'px');r.setProperty('--vy',y+'px');r.setProperty('--vr',Math.ceil(Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y))+40)+'px');
+ try{document.startViewTransition(fn)}catch(e){fn()}return true;
+}
+
+/* ---------- 7. settings ---------- */
+function applyGlass(){
+ const g=clamp((ST.glass==null?55:ST.glass),0,100)/100,r=document.documentElement.style;
+ r.setProperty('--gl-t',g.toFixed(3));r.setProperty('--gl-blur',(12+g*30).toFixed(1)+'px');
+}
+function init(o){
+ ST=o.S;saveFn=o.save||saveFn;drawFn=o.draw||drawFn;
+ buildFilters();applyGlass();
+ document.querySelectorAll('input.pxs').forEach(makeSlider);
+ const gs=$('#gls'),gv=$('#glv');
+ if(gs){gs.value=ST.glass==null?55:ST.glass;gv.textContent=gs.value+'%';gs.addEventListener('input',()=>{ST.glass=+gs.value;gv.textContent=gs.value+'%';applyGlass();saveFn()})}
+ const fl=$('#flu');
+ fluidInit();
+ if(fl){fl.checked=ST.fluid!==false;fl.addEventListener('change',()=>{ST.fluid=fl.checked;setFluid(isGlass()&&fl.checked);saveFn()})}
+ setMode(isGlass());
+}
+/* The carbon theme is the original flat design; switching the style just
+   stops feeding the glass engine rather than tearing it down. */
+function setMode(glass){
+ glass=!!glass;
+ document.body.classList.toggle('gl',glass);
+ const css=document.getElementById('glcss');if(css)css.media=glass?'all':'not all';
+ document.querySelectorAll('input.pxs').forEach(inp=>glass?makeSlider(inp):unwrapSlider(inp));
+ setFluid(glass&&ST.fluid!==false);
+ if(!glass){
+  for(const o of lit){o.style.removeProperty('--mx');o.style.removeProperty('--my')}
+  lit=new Set();Sp.clear();
+ }
+}
+window.LQ={init,target,vt,wake,makeSlider,setMode};
+})();
+
+</script>
 <script>
 const $=s=>document.querySelector(s),esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const uid=()=>Math.random().toString(36).slice(2,8);
 const setH=(el,h)=>{if(el._h!==h){el._h=h;el.innerHTML=h}};
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1900)}
-function ind(el){let i=el.querySelector(':scope>.ind');if(!i){i=document.createElement('i');i.className='ind';el.prepend(i)}const b=el.querySelector('.on');if(!b||!el.offsetParent)return;i.style.width=b.offsetWidth+'px';i.style.transform=`translateX(${b.offsetLeft}px)`;if(!el._rd){el._rd=1;requestAnimationFrame(()=>el.classList.add('rdy'))}}
+function ind(el){let i=el.querySelector(':scope>.ind');if(!i){i=document.createElement('i');i.className='ind';el.prepend(i)}const b=el.querySelector('.on');if(!b||!el.offsetParent)return;LQ.target(i,b.offsetLeft,b.offsetWidth);if(!el._rd){el._rd=1;requestAnimationFrame(()=>el.classList.add('rdy'))}}
 function normAlerts(al,pc){const out={},push=(k,a)=>{const r=out[k]||(out[k]=[]);if(r.length<8)r.push(a)};
  for(const k in al||{}){const v=al[k];(Array.isArray(v)?v:[v]).forEach(a=>{if(!a)return;if(a.t==='pct'&&a.pct>0&&a.base>0)push(k,{id:a.id||uid(),t:'pct',pct:+a.pct,dir:['up','down','any'].includes(a.dir)?a.dir:'any',base:+a.base});else if((a.t==='px'||!a.t)&&isFinite(a.px)&&a.px!==null)push(k,{id:a.id||uid(),t:'px',px:+a.px,dir:a.dir>0?1:-1})})}
  for(const k in pc||{}){const a=pc[k];if(a&&a.pct>0&&a.base>0)push(k,{id:uid(),t:'pct',pct:+a.pct,dir:a.dir==='up'?'up':a.dir==='down'?'down':'any',base:+a.base})}return out}
@@ -309,13 +761,23 @@ const stripLbl=()=>I(S.mini?'app':'strip')+'<span>'+(S.mini?'Full app':'Mini tic
 function markAc(){document.querySelectorAll('#sws [data-c]').forEach(b=>b.classList.toggle('on',b.dataset.c.toLowerCase()===String(S.acc).toLowerCase()))}
 function fillOp(){const o=$('#op');o.style.setProperty('--v',(o.value-o.min)/(o.max-o.min)*100+'%');$('#opv').textContent=o.value+'%'}
 function markIv(){[...$('#ivseg').children].forEach(b=>b.classList.toggle('on',+b.dataset.v===S.iv));ind($('#ivseg'))}
+function markStyle(){const seg=$('#stlseg');if(!seg)return;[...seg.children].forEach(b=>b.classList.toggle('on',b.dataset.v===S.style));ind(seg)}
+function applyStyle(){
+ const glass=S.style!=='carbon';
+ const css=document.getElementById('glcss');if(css)css.media=glass?'all':'not all';
+ document.body.classList.toggle('gl',glass);
+ const b=$('#style');
+ if(b){b.innerHTML=I(glass?'glass':'carbon');b.title=glass?'Style: Liquid Glass  ·  click for Carbon':'Style: Carbon  ·  click for Liquid Glass';b.classList.toggle('on',glass)}
+ if(window.LQ)LQ.setMode(glass);
+ markStyle();
+}
 const S=Object.assign({list:['^NSEI','^BSESN','RELIANCE.NS','TCS.NS','INFY.NS','HDFCBANK.NS','AAPL','NVDA','BTC-USD'],sel:'^NSEI',range:'1D',sw:320,alerts:{},iv:10,op:100,top:false,auto:false,solo:false,type:'area',sma:false,hold:{},sort:0,acc:'#5eeaa8',tray:false},JSON.parse(localStorage.getItem('st')||'{}'));
 const save=()=>localStorage.setItem('st',JSON.stringify(S));
 S.watchlists=S.watchlists||[{name:'Main',symbols:[...S.list]}];S.activeWatchlist=Math.min(S.activeWatchlist||0,S.watchlists.length-1);
-S.theme=S.theme||'dark';if(S.acc==='#8ab4ff')S.acc='#5eeaa8';S.mini=!!S.mini;S.currency=S.currency||'INR';S.pctAlerts=S.pctAlerts||{};S.disp=S.disp||'';S.alerts=normAlerts(S.alerts,S.pctAlerts);S.pctAlerts={};
+S.theme=S.theme||'dark';S.style=S.style==='carbon'?'carbon':'glass';if(S.acc==='#8ab4ff')S.acc='#5eeaa8';S.mini=!!S.mini;S.currency=S.currency||'INR';S.pctAlerts=S.pctAlerts||{};S.disp=S.disp||'';S.alerts=normAlerts(S.alerts,S.pctAlerts);S.pctAlerts={};
 function syncWatchlist(){if(!S.watchlists[S.activeWatchlist])S.watchlists[S.activeWatchlist]={name:'Main',symbols:[...S.list]};S.watchlists[S.activeWatchlist].symbols=[...S.list];save()}
 function renderTabs(){const el=$('#tabs');el.querySelectorAll('.tab').forEach(t=>t.remove());el.insertAdjacentHTML('beforeend',S.watchlists.map((w,i)=>`<div class="tab ${i===S.activeWatchlist?'active':''}" data-tab="${i}" title="Double-click to rename"><span class="tn">${esc(w.name)}</span>${S.watchlists.length>1?`<span class="tabx" data-del="${i}" title="Delete watchlist">${I('x')}</span>`:''}</div>`).join(''));moveInk()}
-function moveInk(){const i=$('.tabink'),t=$('.tab.active');if(!i||!t)return;i.style.width=t.offsetWidth+'px';i.style.transform=`translateX(${t.offsetLeft}px)`;if(!i._r){i._r=1;requestAnimationFrame(()=>i.classList.add('rdy'))}t.scrollIntoView&&t.scrollIntoView({inline:'nearest',block:'nearest'})}
+function moveInk(){const i=$('.tabink'),t=$('.tab.active');if(!i||!t)return;LQ.target(i,t.offsetLeft,t.offsetWidth);if(!i._r){i._r=1;requestAnimationFrame(()=>i.classList.add('rdy'))}t.scrollIntoView&&t.scrollIntoView({inline:'nearest',block:'nearest'})}
 function switchTab(i){window._enter=true;syncWatchlist();S.activeWatchlist=i;S.list=[...S.watchlists[i].symbols];S.sel=S.list[0]||'';save();renderTabs();renderList();poll().then(()=>loadDetail(true));}
 
 const R={'1D':['1d','1m'],'5D':['5d','5m'],'1M':['1mo','30m'],'3M':['3mo','1d'],'6M':['6mo','1d'],'1Y':['1y','1d'],'5Y':['5y','1wk'],'MAX':['max','1mo']};
@@ -460,7 +922,7 @@ $('#cv').onmousemove=e=>{const w=$('#cv').clientWidth,n=C.p.length;if(n<2)return
 $('#cv').onmouseleave=()=>{hov=-1;draw()};new ResizeObserver(draw).observe($('#cw'));
 function showAlert(){const a=S.alerts[S.sel]||[],cu=D[S.sel]?.cur||'';$('#al').placeholder='Price'+(cu?` (${cu})`:'');
  setH($('#at'),a.map(x=>`<span class="chip" data-id="${x.id}">${x.t==='px'?tri(x.dir>0)+nfn(x.px,cu):(x.dir==='any'?'±':x.dir==='up'?'+':'−')+x.pct+'%'}<button data-rm title="Remove alert">${I('x')}</button></span>`).join(''))}
-$('#alertmode').onchange=()=>{const pct=$('#alertmode').value==='percent';$('#alsl').style.display=pct?'none':'';$('#al').style.display=pct?'none':'inline-block';$('#pctalert').style.display=pct?'inline-block':'none';$('#alertdir').style.display=pct?'inline-block':'none'};
+$('#alertmode').onchange=()=>{const pct=$('#alertmode').value==='percent';($('#alsl').closest('.lqs')||$('#alsl')).style.display=pct?'none':'';$('#al').style.display=pct?'none':'inline-block';$('#pctalert').style.display=pct?'inline-block':'none';$('#alertdir').style.display=pct?'inline-block':'none'};
 $('#as').onclick=()=>{const d=D[S.sel];if(!d)return;const arr=S.alerts[S.sel]||[];if(arr.length>=8)return toast('Max 8 alerts per symbol');let a;
  if($('#alertmode').value==='percent'){const pct=Math.abs(parseFloat($('#pctalert').value));if(!pct)return toast('Enter a % value');a={id:uid(),t:'pct',pct,dir:$('#alertdir').value,base:d.price}}
  else{const v=parseFloat($('#al').value);if(!v)return toast('Enter a target price');a={id:uid(),t:'px',px:v,dir:v>d.price?1:-1}}
@@ -520,7 +982,7 @@ function initUI(){const m=()=>{$('#ty').classList.toggle('on',S.type==='candle')
  $('#ty').onclick=()=>{S.type=S.type==='candle'?'area':'candle';save();m();draw()};$('#sm').onclick=()=>{S.sma=!S.sma;save();m();draw()};
  $('#nb').onclick=()=>{nv=!nv;NW.s='';m();news()};$('#so').onclick=()=>{window._enter=true;S.sort=(S.sort+1)%3;save();m();renderList()};m();
  const ac=$('#ac');ac.value=S.acc;markAc();document.documentElement.style.setProperty('--a',S.acc);ac.oninput=()=>{S.acc=ac.value;markAc();document.documentElement.style.setProperty('--a',S.acc);save();draw()};
- document.body.classList.toggle('light',S.theme==='light');$('#theme').onclick=()=>{document.body.classList.add('tt');setTimeout(()=>document.body.classList.remove('tt'),520);{const ti=$('#theme .i');ti._r=(ti._r||0)+180;ti.style.transform=`rotate(${ti._r}deg)`}S.theme=S.theme==='light'?'dark':'light';document.body.classList.toggle('light',S.theme==='light');save();draw()};
+ document.body.classList.toggle('light',S.theme==='light');$('#theme').onclick=e=>{{const ti=$('#theme .i');ti._r=(ti._r||0)+180;ti.style.transform=`rotate(${ti._r}deg)`}const flip=()=>{S.theme=S.theme==='light'?'dark':'light';document.body.classList.toggle('light',S.theme==='light');save();draw()};if(!LQ.vt(flip,e)){document.body.classList.add('tt');setTimeout(()=>document.body.classList.remove('tt'),520)}};
  $('#tr').checked=S.tray;api.win('tray',S.tray);$('#tr').onchange=e=>{S.tray=e.target.checked;api.win('tray',S.tray);save()};
  $('#ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({list:S.list,watchlists:S.watchlists,activeWatchlist:S.activeWatchlist,hold:S.hold,alerts:S.alerts,pctAlerts:S.pctAlerts},null,1)],{type:'application/json'}));a.download='glass-ticker-backup.json';a.click()};
  $('#im').onclick=()=>$('#fi').click();
@@ -550,6 +1012,8 @@ $('#pin').onclick=()=>{S.top=!S.top;$('#pin').classList.toggle('on',S.top);api.w
 $('#op').oninput=e=>{S.op=+e.target.value;fillOp();api.win('op',S.op/100);save()};
 $('#au').onchange=e=>{S.auto=e.target.checked;api.win('auto',S.auto);save()};
 $('#ivseg').onclick=e=>{const b=e.target.closest('[data-v]');if(b){S.iv=+b.dataset.v;save();sched();markIv()}};
+$('#style').onclick=()=>{S.style=S.style==='carbon'?'glass':'carbon';save();applyStyle()};
+$('#stlseg').onclick=e=>{const b=e.target.closest('[data-v]');if(b&&b.dataset.v!==S.style){S.style=b.dataset.v;save();applyStyle()}};
 let sk=0;function tick(){if(document.hidden&&++sk%6)return;poll();loadDetail(false)}function sched(){clearInterval(tm);tm=setInterval(tick,S.iv*1000)}
 document.documentElement.style.setProperty('--sw',S.sw+'px');document.body.classList.toggle('solo',S.solo);
 $('#pin').classList.toggle('on',S.top);api.win('top',S.top);$('#op').value=S.op;fillOp();api.win('op',S.op/100);$('#au').checked=S.auto;markIv();
@@ -562,5 +1026,6 @@ $('#floatChart').innerHTML=I('pinout')+'Pin to desktop';
 $('#dispcur').value=S.disp;$('#dispcur').onchange=async e=>{S.disp=e.target.value;save();await loadFX();renderList(true);renderStrip();pf();showPos();loadDetail(false);pushPinnedUpdate();toast(S.disp?'Prices shown in '+S.disp:'Prices shown in native currency')};
 api.onState&&api.onState(d=>{$('#max').innerHTML=I(d.max?'restore':'max');$('#max').title=d.max?'Restore':'Maximize';requestAnimationFrame(()=>{moveInk();ind($('#rg'));ind($('#ivseg'));draw()})});
 addEventListener('resize',()=>{moveInk();ind($('#rg'));ind($('#ivseg'))});
-initUI();renderTabs();showAlert();document.body.classList.toggle('ticker-mode',S.mini);$('#stripbtn').innerHTML=stripLbl();renderList();poll().then(()=>loadDetail(true));sched();
+initUI();applyStyle();renderTabs();showAlert();document.body.classList.toggle('ticker-mode',S.mini);$('#stripbtn').innerHTML=stripLbl();renderList();poll().then(()=>loadDetail(true));sched();
+LQ.init({S,save,draw});
 </script></body></html>

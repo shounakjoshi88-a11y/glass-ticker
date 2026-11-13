@@ -12,6 +12,21 @@ svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.7;stroke
 .up{color:var(--g)}.dn{color:var(--r)}.tri{width:8px;height:8px;fill:currentColor;stroke:none;margin-right:4px}.tri.d{transform:rotate(180deg)}
 canvas{width:100%;flex:1;min-height:40px;display:block;margin-top:6px}
 .foot{font:400 9px var(--mono);color:#5f636a;display:flex;justify-content:space-between;letter-spacing:.06em;text-transform:uppercase}
+</style>
+<style id="glcss">
+/* v4.0 liquid glass */
+.card{background:radial-gradient(260px circle at var(--mx,70%) var(--my,-10%),rgba(255,255,255,.1),transparent 60%),linear-gradient(155deg,rgba(255,255,255,.09),rgba(255,255,255,.015) 45%,rgba(255,255,255,.04)),rgba(16,18,21,.88);
+ border:1px solid rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 -1px 0 rgba(255,255,255,.05),inset 0 0 30px rgba(255,255,255,.03),0 12px 30px -10px rgba(0,0,0,.7);isolation:isolate}
+.card::before{content:"";position:absolute;z-index:-1;width:240px;height:240px;right:-90px;top:-130px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,color-mix(in srgb,var(--g) 30%,transparent),transparent 66%);animation:wb 12s ease-in-out infinite alternate}
+.card.dn-c::before{background:radial-gradient(circle,color-mix(in srgb,var(--r) 30%,transparent),transparent 66%)}
+@keyframes wb{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-70px,80px) scale(1.2,.9)}}
+.card::after{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;background:radial-gradient(120px circle at var(--mx,-999px) var(--my,-999px),rgba(255,255,255,.85),rgba(255,255,255,0) 72%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.actions button{border:1px solid transparent;transition:background .2s,color .2s,transform .35s cubic-bezier(.34,1.56,.64,1)}
+.actions button:hover{background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.05));border-color:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.3);transform:translateY(-1px) scale(1.08)}
+.actions button:active{transform:scale(.86)}
+#close:hover{background:linear-gradient(180deg,#f0646a,#e5484d)}
+.price{text-shadow:0 0 28px color-mix(in srgb,var(--g) 26%,transparent)}
+canvas{filter:drop-shadow(0 0 7px color-mix(in srgb,var(--g) 35%,transparent))}
 </style></head><body><div class="card"><div class="top"><i class="dot"></i><div class="name" id="name">Pinned stock</div><div class="actions"><button id="hide" title="Fade widget"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button><button id="close" title="Unpin"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div></div>
 <div class="body"><div class="price" id="price">—</div><div class="move" id="move">Waiting for data</div><canvas id="chart" width="560" height="144"></canvas><div class="foot"><span id="symbol">Glass Ticker</span><span id="updated">live</span></div></div></div>
 <script>
@@ -24,4 +39,19 @@ const lo=Math.min(...a),hi=Math.max(...a),s=hi-lo||1,col=up?'#5eeaa8':'#ff7a6b',
 const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,col+'44');g.addColorStop(1,col+'00');x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.lineTo(X(a.length-1),H);x.lineTo(X(0),H);x.fillStyle=g;x.fill();
 x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.lineWidth=2*d;x.lineJoin='round';x.strokeStyle=col;x.stroke();x.beginPath();x.arc(X(a.length-1),Y(a[a.length-1]),3.2*d,0,7);x.fillStyle=col;x.fill()}
 let mine=null;if(window.api?.onWidgetData)window.api.onWidgetData(p=>{if(!mine)mine=p.symbol;if(p.symbol===mine)draw(p)});$('#close').onclick=()=>window.api.closeWidget();$('#hide').onclick=()=>document.body.style.opacity=document.body.style.opacity==='0.25'?'1':'0.25';
+</script>
+<script>
+/* Follow the main window's Style setting (index.html persists it in 'st'). */
+(function(){
+ function sync(){
+  var s={};try{s=JSON.parse(localStorage.getItem('st')||'{}')}catch(e){}
+  var on=s.style!=='carbon';
+  document.body.classList.toggle('gl',on);
+  var c=document.getElementById('glcss');if(c)c.media=on?'all':'not all';
+  return on;
+ }
+ window.__glass=sync();
+ addEventListener('storage',function(e){if(e.key==='st')sync()});
+ addEventListener('focus',function(){sync()});
+})();
 </script></body></html>

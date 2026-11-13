@@ -1,6 +1,6 @@
 {
   "name": "@glass-ticker/vue",
-  "version": "2.9.0",
+  "version": "3.0.0",
   "description": "Glass Ticker as a Vue 3 component",
   "type": "module",
   "main": "./dist/index.js",
