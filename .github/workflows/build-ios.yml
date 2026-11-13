@@ -1,0 +1,98 @@
+name: build ios
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'ios/**'
+      - '.github/workflows/build-ios.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  ios:
+    name: Build the iOS app
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Generate the Xcode project
+        run: |
+          brew install xcodegen
+          cd ios
+          xcodegen generate
+
+      - name: Build
+        run: |
+          cd ios
+          xcodebuild \
+            -project GlassTicker.xcodeproj \
+            -scheme GlassTicker \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package the app
+        run: |
+          cd ios
+          mkdir -p ../dist
+          APP="build/Build/Products/Release-iphoneos/GlassTicker.app"
+          if [ -d "$APP" ]; then
+            cp -R "$APP" ../dist/GlassTicker.app
+            (cd ../dist && zip -qr GlassTicker-ios.app.zip GlassTicker.app)
+          fi
+          # A signed ipa needs an Apple Developer account and its secrets.
+          if [ -n "${APPLE_CERTIFICATE_P12_BASE64:-}" ] && [ -n "${APPLE_PROVISIONING_PROFILE_BASE64:-}" ] && [ -n "${APPLE_TEAM_ID:-}" ]; then
+            echo "Signing details found - building a signed ipa"
+            echo "$APPLE_CERTIFICATE_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+            echo "$APPLE_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$RUNNER_TEMP/profile.mobileprovision"
+            security create-keychain -p actions build.keychain
+            security default-keychain -s build.keychain
+            security unlock-keychain -p actions build.keychain
+            security import "$RUNNER_TEMP/cert.p12" -k build.keychain -P "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" -T apple
+            security set-key-partition-list -S apple-tool:,apple: -s -k build.keychain build.keychain
+            mkdir -p "$RUNNER_TEMP/Provisioning"
+            cp "$RUNNER_TEMP/profile.mobileprovision" "$RUNNER_TEMP/Provisioning/GlassTicker.mobileprovision"
+            cd ios
+            xcodebuild \
+              -project GlassTicker.xcodeproj \
+              -scheme GlassTicker \
+              -configuration Release \
+              -sdk iphoneos \
+              -derivedDataPath build \
+              -archivePath "$RUNNER_TEMP/GlassTicker.xcarchive" \
+              -allowProvisioningUpdates \
+              DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+              CODE_SIGN_STYLE=Manual \
+              PROVISIONING_PROFILE_SPECIFIER="GlassTicker" \
+              archive
+            xcodebuild -exportArchive \
+              -archivePath "$RUNNER_TEMP/GlassTicker.xcarchive" \
+              -exportOptionsPlist "$RUNNER_TEMP/export.plist" \
+              -exportPath "$RUNNER_TEMP/ipa"
+            cp "$RUNNER_TEMP/ipa/GlassTicker.ipa" ../dist/GlassTicker-ios.ipa
+          fi
+          ls -la ../dist
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: GlassTicker-ios
+          path: |
+            dist/GlassTicker-ios.app.zip
+            dist/GlassTicker-ios.ipa
+          if-no-files-found: error
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            dist/GlassTicker-ios.app.zip
+            dist/GlassTicker-ios.ipa
+          draft: false
