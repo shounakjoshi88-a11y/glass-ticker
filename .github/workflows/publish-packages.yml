@@ -31,6 +31,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REGISTRY: https://npm.pkg.github.com
           OWNER: ${{ github.repository_owner }}
+          WORKSPACE: ${{ github.workspace }}
         run: |
           set -euo pipefail
           # The plugin packages ship under a scope because GitHub Packages
@@ -40,10 +41,11 @@ jobs:
             if [ "$pkg" = "glass-ticker" ]; then
               work="$RUNNER_TEMP/npm-glass-ticker"
               mkdir -p "$work"
-              cp -r packages/npm/glass-ticker/. "$work/"
+              cp -r "$WORKSPACE/packages/npm/glass-ticker/." "$work/"
             else
               work="$RUNNER_TEMP/npm-$pkg"
-              cp -r "packages/$pkg" "$work"
+              rm -rf "$work"
+              cp -r "$WORKSPACE/packages/$pkg" "$work"
             fi
             cd "$work"
             node -e "
