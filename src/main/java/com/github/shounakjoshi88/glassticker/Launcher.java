@@ -32,7 +32,7 @@ public final class Launcher {
     private static final String REPO = "shounakjoshi88-a11y/glass-ticker";
     private static final String RELEASE_BASE = "https://github.com/" + REPO + "/releases/latest/download";
     private static final String MANIFEST_URL = RELEASE_BASE + "/release.json";
-    private static final String VERSION = "3.1.0";
+    private static final String VERSION = "3.1.1";
 
     private Launcher() {
     }

@@ -1,6 +1,6 @@
 {
   "name": "@glass-ticker/server",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Reference data API for the Glass Ticker web component",
   "type": "module",
   "main": "./server.mjs",
