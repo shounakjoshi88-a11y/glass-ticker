@@ -2,7 +2,10 @@
   "name": "glass-ticker",
   "version": "2.6.0",
   "description": "Glass Ticker - a frameless acrylic desktop market ticker for Windows, macOS and Linux",
-  "author": "Shounak",
+  "author": {
+    "name": "Shounak",
+    "email": "shounakjoshi88@users.noreply.github.com"
+  },
   "license": "MIT",
   "homepage": "https://github.com/shounakjoshi88-a11y/glass-ticker",
   "repository": {
@@ -12,10 +15,10 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win portable --x64",
-    "dist:win": "electron-builder --win portable --x64",
-    "dist:mac": "electron-builder --mac dmg zip",
-    "dist:linux": "electron-builder --linux AppImage deb"
+    "dist": "electron-builder --win portable --x64 --publish never",
+    "dist:win": "electron-builder --win portable --x64 --publish never",
+    "dist:mac": "electron-builder --mac dmg zip --publish never",
+    "dist:linux": "electron-builder --linux AppImage deb --publish never"
   },
   "devDependencies": {
     "electron": "^31.7.7",
