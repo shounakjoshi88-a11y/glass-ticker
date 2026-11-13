@@ -1,7 +1,7 @@
 <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
 *{box-sizing:border-box}:root{--g:#5eeaa8;--r:#ff7a6b;--mono:"JetBrains Mono","Cascadia Mono",Consolas,monospace}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font:12px Inter,"Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;color:#ececee;-webkit-font-smoothing:antialiased}body{padding:7px;transition:opacity .3s}
-.card{height:100%;border-radius:18px;background:#121315;border:1px solid rgba(255,255,255,.09);box-shadow:0 14px 40px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.04);overflow:hidden;position:relative;display:flex;flex-direction:column}
+.card{height:100%;border-radius:18px;background:#121315;border:1px solid rgba(255,255,255,.09);box-shadow:inset 0 1px rgba(255,255,255,.04);overflow:hidden;position:relative;display:flex;flex-direction:column}
 .top{height:36px;display:flex;align-items:center;padding:0 8px 0 12px;gap:8px;-webkit-app-region:drag;cursor:move;flex:none}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--g);box-shadow:0 0 9px var(--g);animation:p 2s infinite}@keyframes p{50%{opacity:.35}}
 .name{font-size:11.5px;font-weight:620;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
@@ -23,5 +23,5 @@ const c=$('#chart'),r=c.getBoundingClientRect(),d=devicePixelRatio||1;c.width=r.
 const lo=Math.min(...a),hi=Math.max(...a),s=hi-lo||1,col=up?'#5eeaa8':'#ff7a6b',X=i=>6*d+i/(a.length-1)*(W-14*d),Y=v=>6*d+(hi-v)/s*(H-14*d);
 const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,col+'44');g.addColorStop(1,col+'00');x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.lineTo(X(a.length-1),H);x.lineTo(X(0),H);x.fillStyle=g;x.fill();
 x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.lineWidth=2*d;x.lineJoin='round';x.strokeStyle=col;x.stroke();x.beginPath();x.arc(X(a.length-1),Y(a[a.length-1]),3.2*d,0,7);x.fillStyle=col;x.fill()}
-if(window.api?.onWidgetData)window.api.onWidgetData(draw);$('#close').onclick=()=>window.api.closeWidget();$('#hide').onclick=()=>document.body.style.opacity=document.body.style.opacity==='0.25'?'1':'0.25';
+let mine=null;if(window.api?.onWidgetData)window.api.onWidgetData(p=>{if(!mine)mine=p.symbol;if(p.symbol===mine)draw(p)});$('#close').onclick=()=>window.api.closeWidget();$('#hide').onclick=()=>document.body.style.opacity=document.body.style.opacity==='0.25'?'1':'0.25';
 </script></body></html>

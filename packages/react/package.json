@@ -1,6 +1,6 @@
 {
   "name": "@glass-ticker/react",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "Glass Ticker as a React component",
   "type": "module",
   "main": "./dist/index.js",

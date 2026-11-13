@@ -69,6 +69,23 @@ npm install @shounakjoshi88-a11y/glass-ticker --registry=https://npm.pkg.github.
 All the language wrappers fetch `release.json` first and verify the download
 against that hash - a mismatched file is deleted instead of executed.
 
+## Platforms
+
+| Platform | Build | Install |
+| --- | --- | --- |
+| **Windows** | portable `.exe` | download it, or `winget install ShounakJoshi.GlassTicker`, or `scoop install glass-ticker` |
+| **macOS** | `.dmg` and `.zip` | download and drag to Applications |
+| **Linux** | `.AppImage` and `.deb` | `chmod +x *.AppImage && ./GlassTicker*.AppImage`, or `sudo dpkg -i *.deb` |
+| **iOS / Android** | the web component | open the component in Safari/Chrome - see below |
+
+The window chrome adapts to the platform: the Windows acrylic backdrop on
+Windows 11, the macOS vibrancy material on macOS, and a transparent window
+where the CSS glass does the work on Linux.
+
+iOS and Android cannot run an Electron app, but the **component** works
+there unchanged - it is plain HTML - so point a `WKWebView` (or a Capacitor
+or Cordova shell) at the data API and drop the `<glass-ticker>` tag in.
+
 ## Use it as a plugin in your own app
 
 The ticker UI is also a **standalone web component**, so you can drop it into
@@ -186,12 +203,15 @@ warning the first time you run it. Choose *More info* -> *Run anyway*.
 
 ## Known limits
 
-- Windows only - there is no macOS or Linux build
-- The executable is not code-signed, so SmartScreen warns on first run
+- The desktop app is Electron, so there is no native iOS or Android build -
+  use the web component there
+- The executable is not code-signed, so macOS Gatekeeper and Windows
+  SmartScreen both warn on first run
 - Quotes come from Yahoo's public feed and can be delayed up to 15 minutes on
   some exchanges
 - Company logos come from a third-party favicon service, so a symbol with no
   known issuer falls back to a monogram
+- Start at login is wired up on Windows and macOS only
 
 ## License
 

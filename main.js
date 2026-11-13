@@ -1,24 +1,34 @@
 const {app,BrowserWindow,ipcMain,globalShortcut,Tray,Menu,shell,nativeImage}=require('electron');
 const fs=require('fs'),path=require('path');
+// Windows gets the acrylic backdrop, macOS the vibrancy material, and
+// Linux a plain transparent window where the CSS glass does the work.
+const windowChrome=()=>{
+  if(process.platform==='darwin')return{vibrancy:'under-window',visualEffectState:'active',transparent:false,backgroundColor:'#00000000'};
+  if(process.platform==='win32')return{backgroundMaterial:'acrylic',transparent:true,backgroundColor:'#00000000'};
+  return{transparent:true,backgroundColor:'#00000000'};
+};
+// 'screen-saver' only exists on Windows - macOS rejects it outright.
+const topLevel=process.platform==='win32'?'screen-saver':'floating';
 app.setAppUserModelId('com.shounak.glassticker');
 if(!app.requestSingleInstanceLock()){app.quit();return}
 let win,tray,toTray=false,quitting=false;
 const pinnedWidgets=new Map(); let widgetSeq=0;
 const icon=path.join(__dirname,'icon.png'),cfg=()=>path.join(app.getPath('userData'),'win.json');
-let island=null,lastIsland=null;
-const closeIsland=()=>{if(island&&!island.isDestroyed())island.close();island=null};
-const show=()=>{closeIsland();win.show();win.focus()};
+let island=null,lastIsland=null,curOp=1;
+function fade(w,to,ms,cb){const from=w.getOpacity(),t0=Date.now(),iv=setInterval(()=>{if(w.isDestroyed())return clearInterval(iv);const k=Math.min(1,(Date.now()-t0)/ms);w.setOpacity(from+(to-from)*k);if(k>=1){clearInterval(iv);cb&&cb()}},16)}
+const closeIsland=()=>{const isl=island;island=null;if(isl&&!isl.isDestroyed()){isl.webContents.send('island:bye');setTimeout(()=>{if(!isl.isDestroyed())isl.close()},240)}};
+const show=()=>{closeIsland();win.setOpacity(0);win.show();win.focus();fade(win,curOp,220)};
 function openIsland(p){
   if(p)lastIsland=p;
   if(island&&!island.isDestroyed())return;
-  const {screen}=require('electron'),wa=screen.getDisplayMatching(win.getBounds()).workArea,IW=440,IH=240;
+  const {screen}=require('electron'),wa=screen.getDisplayMatching(win.getBounds()).workArea,IW=440,IH=300;
   island=new BrowserWindow({width:IW,height:IH,x:Math.round(wa.x+(wa.width-IW)/2),y:wa.y,frame:false,transparent:true,backgroundColor:'#00000000',resizable:false,movable:false,minimizable:false,maximizable:false,alwaysOnTop:true,skipTaskbar:true,hasShadow:false,focusable:false,show:false,
     webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,sandbox:true}});
-  island.setAlwaysOnTop(true,'screen-saver');island.setVisibleOnAllWorkspaces(true,{visibleOnFullScreen:true});
+  island.setAlwaysOnTop(true,topLevel);island.setVisibleOnAllWorkspaces(true,{visibleOnFullScreen:true});
   island.setIgnoreMouseEvents(true,{forward:true});
   island.loadFile('island.html');
-  island.webContents.once('did-finish-load',()=>{if(lastIsland)island.webContents.send('island:data',lastIsland);island.showInactive();win.hide()});
-  island.on('closed',()=>{island=null});
+  island.webContents.once('did-finish-load',()=>{if(lastIsland)island.webContents.send('island:data',lastIsland);island.showInactive();fade(win,0,170,()=>{win.hide();win.setOpacity(curOp)})});
+  {const me=island;me.on('closed',()=>{if(island===me)island=null})}
 }
 ipcMain.handle('island-open',(_,p)=>openIsland(p));
 ipcMain.on('island-update',(_,p)=>{lastIsland=p;if(island&&!island.isDestroyed())island.webContents.send('island:data',p)});
@@ -27,13 +37,14 @@ ipcMain.handle('island-restore',()=>show());
 function createWindow(){
   let c={};try{c=JSON.parse(fs.readFileSync(cfg()))}catch{}
   win=new BrowserWindow({width:c.width||1020,height:c.height||640,x:c.x,y:c.y,minWidth:460,minHeight:320,icon,
-    frame:false,backgroundMaterial:'acrylic',backgroundColor:'#00000000',show:false,
+    frame:false,...windowChrome(),show:false,
     webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,sandbox:true}});
   win.loadFile('index.html');
-  win.once('ready-to-show',()=>win.show());
+  win.once('ready-to-show',()=>{if(c.max)win.maximize();win.show()});
+  const st=()=>{if(win&&!win.isDestroyed())win.webContents.send('ws',{max:win.isMaximized()})};win.on('maximize',st);win.on('unmaximize',st);win.webContents.on('did-finish-load',st);
   win.webContents.setWindowOpenHandler(()=>({action:'deny'}));
   win.webContents.on('will-navigate',e=>e.preventDefault());
-  win.on('close',e=>{try{fs.writeFileSync(cfg(),JSON.stringify(win.getBounds()))}catch{}
+  win.on('close',e=>{try{fs.writeFileSync(cfg(),JSON.stringify({...win.getNormalBounds(),max:win.isMaximized()}))}catch{}
     if(toTray&&!quitting){e.preventDefault();win.hide()}});
 }
 ipcMain.handle('get',async(_,u)=>{
@@ -42,8 +53,9 @@ ipcMain.handle('get',async(_,u)=>{
   if(!r.ok)throw new Error('HTTP '+r.status);return r.json();
 });
 ipcMain.handle('open',(_,u)=>{if(typeof u==='string'&&/^https:\/\//.test(u))shell.openExternal(u)});
-ipcMain.handle('pin-widget',(event,payload,hideMain=false)=>{
+ipcMain.handle('pin-widget',(event,payload,hideMain=false,onlyOutside=false)=>{
   const point=require('electron').screen.getCursorScreenPoint();
+  if(onlyOutside&&win&&!win.isDestroyed()){const b=win.getBounds();if(point.x>=b.x&&point.x<=b.x+b.width&&point.y>=b.y&&point.y<=b.y+b.height)return null}
   const id=String(++widgetSeq);
   const w=new BrowserWindow({width:300,height:190,x:Math.max(0,point.x-150),y:Math.max(0,point.y-70),
     frame:false,transparent:true,backgroundColor:'#00000000',resizable:true,minWidth:230,minHeight:145,
@@ -61,8 +73,8 @@ ipcMain.handle('win',(_,c,v)=>{
   if(c==='max'){if(win.isMaximized())win.unmaximize();else win.maximize();}
   if(c==='close')win.close();
   if(c==='top')win.setAlwaysOnTop(!!v);
-  if(c==='op')win.setOpacity(Math.min(1,Math.max(.4,+v||1)));
-  if(c==='auto')app.setLoginItemSettings({openAtLogin:!!v});
+  if(c==='op'){curOp=Math.min(1,Math.max(.4,+v||1));win.setOpacity(curOp)}
+  if(c==='auto'){if(process.platform!=='linux')app.setLoginItemSettings({openAtLogin:!!v});}
   if(c==='tray')toTray=!!v;
   if(c==='tip'&&tray)tray.setToolTip('Glass Ticker  '+String(v).slice(0,100));
 });
